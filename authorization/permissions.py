@@ -24,3 +24,21 @@ class IsArtist(permissions.BasePermission):
             return payload['rights'] == 'artist'
         except KeyError:
             return False
+
+
+class IsBasic(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            payload = retrieve_payload(request)
+            return payload['rights'] == 'basic'
+        except KeyError:
+            return False
+
+
+class IsGov(permissions.BasePermission):
+    def has_permission(self, request, view):
+        try:
+            payload = retrieve_payload(request)
+            return payload['rights'] == 'gov'
+        except KeyError:
+            return False
