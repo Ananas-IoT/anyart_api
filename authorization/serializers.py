@@ -2,8 +2,14 @@ from django.contrib.auth.models import User
 from jwt.compat import text_type
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from authorization.models import UserProfile
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -11,11 +17,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     access = serializers.SerializerMethodField()
     refresh = serializers.SerializerMethodField()
-    rights = serializers.CharField(max_length=50)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'rights', 'email', 'access', 'refresh')
+        fields = ('id', 'username', 'password', 'first_name', 'last_name', 'email', 'access', 'refresh')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_access(self, user):
@@ -30,6 +35,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
         return refresh
 
+
     def create(self, validated_data):
         user = User(
             email=validated_data['email'],
@@ -43,10 +49,22 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
         user_profile = UserProfile(
             user=user,
-            rights=validated_data['rights']
+            rights=self.context['rights']
         )
 
         user_profile.save()
 
 
         return user
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super(MyTokenObtainPairSerializer, cls).get_token(user)
+
+        # Add custom claims
+        token['rights'] = UserProfile.objects.filter(user=user).get().rights
+
+        return token
+
