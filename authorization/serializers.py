@@ -19,14 +19,20 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     def get_access(self, user):
         tokens = RefreshToken.for_user(user)
-        access = text_type(tokens.access_token)
 
+        # Add custom claims to payload
+        tokens['rights'] = UserProfile.objects.filter(user=user).get().rights
+
+        access = text_type(tokens.access_token)
         return access
 
     def get_refresh(self, user):
         tokens = RefreshToken.for_user(user)
-        refresh = text_type(tokens)
 
+        # Add custom claims to payload
+        tokens['rights'] = UserProfile.objects.filter(user=user).get().rights
+
+        refresh = text_type(tokens)
         return refresh
 
     def create(self, validated_data):
