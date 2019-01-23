@@ -19,5 +19,6 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', views.HelloView.as_view(), name='hello'),
-    path('authorization/', include('authorization.urls'))
+    path('authorization/', include('authorization.urls')),
+    path('workload/', include('workload.urls')),
 ]

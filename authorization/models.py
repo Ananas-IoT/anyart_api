@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 rights_types = [
@@ -8,5 +9,5 @@ rights_types = [
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=False)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
     rights = models.CharField(blank=False, max_length=50, choices=rights_types)
