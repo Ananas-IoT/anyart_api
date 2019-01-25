@@ -1,10 +1,28 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.timezone import now
+
 from anyart_api import storage_backends as sb
 
 
 class Workload(models.Model):
-    status = models.IntegerField(null=False, blank=False)
+    JUST_CREATED = 1
+    SKETCHES_ADDED = 2
+    SKETCHES_APPROVED = 3
+    AGREEMENT_READY = 5
+    ART_READY = 8
+    ART_APPROVED = 13
+
+    status_choices = [
+        (JUST_CREATED, 'InitialUpload'),
+        (SKETCHES_ADDED, 'FirstSketchesHaveAdded'),
+        (SKETCHES_APPROVED, 'SketchesBeenApprovedByCouncil'),
+        (AGREEMENT_READY, 'LegalAgreementIsReady'),
+        (ART_READY, 'StreetArtIsComplete'),
+        (ART_APPROVED, 'StreetArtCorrespondsToAgreement')
+    ]
+    created = models.DateTimeField(auto_now_add=True, null=False, blank=True)
+    status = models.IntegerField(null=False, blank=True, choices=status_choices, default=JUST_CREATED)
     requirements = models.TextField(null=True, blank=True)
 
 
@@ -16,6 +34,7 @@ class Sketch(models.Model):
 class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
+    description = models.TextField(blank=True)
 
 
 class Location(models.Model):
@@ -33,6 +52,8 @@ class Restriction(models.Model):
 All models below represent files which will be stored in separate db tables.
 File models should always extend AbstractFile models for convenience and scalability
 """
+
+
 class AbstractFile(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True, null=False)
 
@@ -75,4 +96,3 @@ class PermissionLetter(AbstractFile):
 class Document(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     upload = models.FileField(storage=sb.PrivateMediaStorage(), upload_to='documents')
-

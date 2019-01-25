@@ -63,4 +63,3 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['rights'] = UserProfile.objects.filter(user=user).get().rights
 
         return token
-
