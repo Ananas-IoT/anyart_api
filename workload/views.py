@@ -1,28 +1,22 @@
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from anyart_api.parsers import NestedMultipartParser
-from workload.serializers import DocumentSerializer, UserWallUploadSerializer
-from .models import Document, Workload
+from authorization.permissions import retrieve_payload
+from workload.serializers import WallPhotoWrapperSerializer
+from .models import WallPhotoWrapper
 
 
-class WallPhotoView(APIView):
+class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
     parser_classes = (NestedMultipartParser, )
+    queryset = WallPhotoWrapper.objects.all()
+    serializer_class = WallPhotoWrapperSerializer
 
-    def post(self, request):
-        serializer = UserWallUploadSerializer(data=request.data)
+    def create(self, request, *args, **kwargs):
+        user_id = int(retrieve_payload(request)['user_id'])
+        request.data['user_id'] = user_id
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-
-        return Response(serializer.data)
-
-
-class DocumentCreateView(CreateAPIView):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
-
-
-class DocumentRetrieveView(ListAPIView):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

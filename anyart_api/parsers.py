@@ -17,8 +17,13 @@ class NestedMultipartParser(parsers.MultiPartParser):
                 nested_dict_key = key[:index_left_bracket]
                 nested_value_key = key[index_left_bracket + 1:index_right_bracket]
                 if nested_dict_key not in data:
+                    if nested_value_key.isdigit():
+                        data[nested_dict_key] = []
                     data[nested_dict_key] = {}
                 data[nested_dict_key][nested_value_key] = value
             else:
-                data[key] = value
+                if value:
+                    data[key] = value
+                else:
+                    data[key] = {}
         return parsers.DataAndFiles(data, result.files)

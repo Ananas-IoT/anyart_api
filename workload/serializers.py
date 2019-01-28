@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from workload.models import Document, Location, Workload, WallPhotoWrapper, WallPhoto
+from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto
 
 
-class WorkloadSerializer(serializers.ModelSerializer):
+class WallPhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Workload
+        model = WallPhoto
         fields = '__all__'
 
 
@@ -17,32 +17,34 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class WorkloadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Workload
+        fields = '__all__'
+
+
 class WallPhotoWrapperSerializer(serializers.ModelSerializer):
+    workload = WorkloadSerializer(many=False, required=True)
+    location = LocationSerializer(many=False, required=True)
+    wall_photos = WallPhotoSerializer(many=True, read_only=True)
+    user_id = serializers.CharField(write_only=True)
 
     class Meta:
         model = WallPhotoWrapper
         fields = '__all__'
 
-
-class WallPhotoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = WallPhoto
-        fields = '__all__'
-
-
-class UserWallUploadSerializer(serializers.Serializer):
-    workload = WorkloadSerializer()
-    location = LocationSerializer()
-    wall_photo_wrapper = WallPhotoWrapperSerializer()
-    wall_photo = WallPhotoSerializer(many=True)
-
     def create(self, validated_data):
-        ...
+        owner_id = validated_data.pop('user_id')
 
+        workload_data = validated_data.pop('workload')
+        workload = Workload.objects.create(**workload_data)
+        location_data = validated_data.pop('location')
+        location = Location.objects.create(**location_data)
+        wall_photos_data = self.context.get('view').request.FILES
+        wall_photo_wrapper = WallPhotoWrapper.objects.create(**validated_data, owner_id=owner_id,
+                                                             location=location, workload=workload)
+        for wall_photo in wall_photos_data.values():
+            WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
 
-class DocumentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Document
-        fields = ('upload', )
+        return wall_photo_wrapper

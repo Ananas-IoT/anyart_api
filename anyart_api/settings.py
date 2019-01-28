@@ -136,7 +136,7 @@ USE_L10N = True
 USE_TZ = True
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=45),
 }
 
 # -------------- AWS S3 -----------------
