@@ -35,7 +35,7 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        owner_id = validated_data.pop('user_id')
+        owner_id = int(validated_data.pop('user_id'))
 
         workload_data = validated_data.pop('workload')
         workload = Workload.objects.create(**workload_data)

@@ -13,7 +13,7 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
     serializer_class = WallPhotoWrapperSerializer
 
     def create(self, request, *args, **kwargs):
-        user_id = int(retrieve_payload(request)['user_id'])
+        user_id = retrieve_payload(request)['user_id']
         request.data['user_id'] = user_id
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
