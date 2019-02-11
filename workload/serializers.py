@@ -21,7 +21,9 @@ class WorkloadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workload
-        fields = '__all__'
+        # fields = '__all__'
+        # todo list fields explicitly
+        exclude = ('status', 'requirements')
 
 
 class WallPhotoWrapperSerializer(serializers.ModelSerializer):
@@ -48,3 +50,20 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
             WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
 
         return wall_photo_wrapper
+
+    def update(self, instance, validated_data):
+
+        workload_data = validated_data.pop('workload', None)
+        if workload_data:
+            instance.workload.requirements = workload_data.pop('requirements', instance.workload.requirements)
+        location_data = validated_data.pop('location', None)
+        if location_data:
+            instance.location.lng = location_data.pop('lng', instance.location.lng)
+            instance.location.lat = location_data.pop('lat', instance.location.lat)
+        wall_photos_data = self.context.get('view').request.FILES
+        for wall_photo in wall_photos_data.values():
+            WallPhoto.objects.create(photo=wall_photo, wrapper=instance)
+
+        instance.description = validated_data.pop('description', instance.description)
+
+        return instance

@@ -20,3 +20,12 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
             self.perform_create(serializer)
             return Response(serializer.data)
         return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        user_id = retrieve_payload(request)['user_id']
+        request.data['user_id'] = user_id
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

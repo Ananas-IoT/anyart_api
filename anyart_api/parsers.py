@@ -2,10 +2,7 @@ from rest_framework import parsers
 
 
 class NestedMultipartParser(parsers.MultiPartParser):
-    """
-    Parser for processing nested field values as well as multipart files.
-    Author: Ahmed H. Ismail.
-    """
+
     def parse(self, stream, media_type=None, parser_context=None):
         result = super().parse(stream=stream, media_type=media_type, parser_context=parser_context)
         data = {}
