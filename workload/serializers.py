@@ -11,10 +11,27 @@ class SketchImageSerializer(serializers.ModelSerializer):
 
 
 class WallPhotoSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(read_only=True, required=False)
 
     class Meta:
         model = WallPhoto
         fields = '__all__'
+
+    def create(self, validated_data):
+        photo = next(self.context.get('view').request.FILES.values())
+        wrapper = validated_data.pop('wrapper', None)
+
+        wall_photo = WallPhoto.objects.create(photo=photo, wrapper=wrapper)
+
+        return wall_photo
+
+    def update(self, instance, validated_data):
+        photo = next(self.context.get('view').request.FILES.values())
+
+        instance.photo = photo or instance.photo
+        instance.save()
+
+        return instance
 
 
 class LocationSerializer(serializers.ModelSerializer):

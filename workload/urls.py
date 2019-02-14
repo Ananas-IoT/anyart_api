@@ -11,5 +11,9 @@ urlpatterns = [
     path('sketches/', views.SketchViewSet.as_view(ru.list_dict),
          name='sketch-list'),
     path('sketches/<int:pk>', views.SketchViewSet.as_view(ru.detail_dict),
-         name='sketch-detail')
+         name='sketch-detail'),
+    path('wall_photo/', views.WallPhotoViewSet.as_view(ru.list_dict),
+         name='wall_photo-list'),
+    path('wall_photo/<int:pk>', views.WallPhotoViewSet.as_view(ru.detail_dict),
+         name='wall_photo-detail')
 ]
