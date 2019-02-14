@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto
+from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
+
+
+class SketchImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SketchImage
+        fields = '__all__'
 
 
 class WallPhotoSerializer(serializers.ModelSerializer):
@@ -65,5 +72,37 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
             WallPhoto.objects.create(photo=wall_photo, wrapper=instance)
 
         instance.description = validated_data.pop('description', instance.description)
+        instance.save()
+
+        return instance
+
+
+class SketchSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(write_only=True)
+    sketches = SketchImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Sketch
+        fields = '__all__'
+
+    def create(self, validated_data):
+        owner_id = int(validated_data.pop('user_id'))
+
+        sketch = Sketch.objects.create(**validated_data, owner_id=owner_id)
+        sketch_files_data = self.context.get('view').request.FILES
+
+        for image in sketch_files_data.values():
+            SketchImage.objects.create(image=image, sketch=sketch)
+
+        return sketch
+
+    def update(self, instance, validated_data):
+        sketch_files_data = self.context.get('view').request.FILES
+        instance.workload = validated_data.pop('workload', instance.workload)
+
+        for image in sketch_files_data.values():
+            SketchImage.objects.create(image=image, sketch=instance)
+
+        instance.save()
 
         return instance

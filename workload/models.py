@@ -26,7 +26,7 @@ class Workload(models.Model):
 
 
 class Sketch(models.Model):
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
 
 
@@ -69,13 +69,15 @@ class WallPhoto(AbstractFile):
 
 
 class SketchImage(AbstractFile):
-    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False)
+    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
+                               related_name='sketches')
     image = models.FileField(storage=sb.PublicMediaStorage(), upload_to='sketches',
                              blank=False, null=False)
 
 
 class PhotoAfter(AbstractFile):
-    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
+    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False,
+                                 related_name='after_photos')
     photo = models.ImageField(storage=sb.PublicMediaStorage(), upload_to='after_photos',
                               blank=False, null=False)
 
