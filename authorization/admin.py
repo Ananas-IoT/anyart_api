@@ -1,8 +1,6 @@
 from django.contrib import admin
+from . import models as m
 
-from authorization.models import UserProfile
+models_list = [m.UserProfile, ]
 
-
-@admin.register(UserProfile)
-class UserProfileAdminModel(admin.ModelAdmin):
-    pass
+admin.site.register(models_list)
