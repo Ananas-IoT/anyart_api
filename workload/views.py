@@ -1,4 +1,5 @@
-from rest_framework import viewsets, status
+from django.contrib.auth.models import User
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 
 from anyart_api.parsers import NestedMultipartParser
@@ -63,3 +64,6 @@ class WallPhotoViewSet(viewsets.ModelViewSet):
     parser_classes = (NestedMultipartParser, )
     queryset = WallPhoto.objects.all()
     serializer_class = WallPhotoSerializer
+
+
+

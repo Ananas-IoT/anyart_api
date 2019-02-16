@@ -51,3 +51,12 @@ class IsOwner(permissions.BasePermission):
             return payload['user_id'] == obj.owner
         except KeyError:
             return False
+
+
+class IsProfileOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        try:
+            payload = retrieve_payload(request)
+            return payload['user_id'] == obj.id
+        except KeyError:
+            return False

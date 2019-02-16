@@ -12,7 +12,8 @@ class UserProfile(models.Model):
         (ARTIST, 'Artist'),
         (GOVERNMENT, 'GovernmentRepresentative')
     ]
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
+                              related_name='user_profile')
     rights = models.CharField(blank=False, max_length=50, choices=rights_types)
 
     def __str__(self):

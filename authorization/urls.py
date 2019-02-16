@@ -5,5 +5,6 @@ from . import views
 urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('register/', views.UserListView.as_view(), name='user_create')
+    path('register/', views.UserCreateView.as_view(), name='user_create'),
+    path('profile/', views.profile, name='user_retrieve')
 ]

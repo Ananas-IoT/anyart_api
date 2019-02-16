@@ -1,15 +1,14 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from rest_framework.decorators import api_view
 
-# Create your views here.
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from authorization.serializers import RegisterUserSerializer, MyTokenObtainPairSerializer
+from authorization.serializers import RegisterUserSerializer, MyTokenObtainPairSerializer, ReadOnlyUserSerializer
 
 
-class UserListView(generics.ListCreateAPIView):
-    """Handles creating and listing Users."""
+class UserCreateView(generics.CreateAPIView):
+    """Handles creating Users."""
     queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -23,3 +22,10 @@ class UserListView(generics.ListCreateAPIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+@api_view(http_method_names=['GET'])
+def profile(request):
+    serializer = ReadOnlyUserSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+

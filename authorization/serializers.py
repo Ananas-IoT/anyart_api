@@ -21,7 +21,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         tokens = RefreshToken.for_user(user)
 
         # Add custom claims to payload
-        tokens['rights'] = UserProfile.objects.filter(user=user).get().rights
+        tokens['rights'] = UserProfile.objects.filter(owner=user).get().rights
 
         access = text_type(tokens.access_token)
         return access
@@ -30,7 +30,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         tokens = RefreshToken.for_user(user)
 
         # Add custom claims to payload
-        tokens['rights'] = UserProfile.objects.filter(user=user).get().rights
+        tokens['rights'] = UserProfile.objects.filter(owner=user).get().rights
 
         refresh = text_type(tokens)
         return refresh
@@ -46,12 +46,19 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.save()
 
         user_profile = UserProfile(
-            user=user,
+            owner=user,
             rights=self.context['rights']
         )
         user_profile.save()
 
         return user
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -60,6 +67,16 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
 
         # Add custom claims
-        token['rights'] = UserProfile.objects.filter(user=user).get().rights
+        token['rights'] = UserProfile.objects.filter(owner=user).get().rights
 
         return token
+
+
+class ReadOnlyUserSerializer(serializers.ModelSerializer):
+    user_profile = UserProfileSerializer(read_only=True)
+    username = serializers.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'user_profile')
+        extra_kwargs = {'password': {'write_only': True}}
