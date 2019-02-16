@@ -12,8 +12,8 @@ class UserProfile(models.Model):
         (ARTIST, 'Artist'),
         (GOVERNMENT, 'GovernmentRepresentative')
     ]
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
     rights = models.CharField(blank=False, max_length=50, choices=rights_types)
 
     def __str__(self):
-        return self.user.username
+        return '%s: %s' % (self.owner.username, self.rights)

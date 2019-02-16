@@ -20,20 +20,33 @@ class Workload(models.Model):
         (ART_READY, 'StreetArtIsComplete'),
         (ART_APPROVED, 'StreetArtCorrespondsToAgreement')
     ]
-    created = models.DateTimeField(auto_now_add=True, null=False, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=True)
     status = models.IntegerField(null=False, blank=True, choices=status_choices, default=JUST_CREATED)
     requirements = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return 'initialized by %s, %s, %s' % (self.photo_wrappers[0].owner,
+                                              self.created_at.date(), self.created_at.time())
 
 
 class Sketch(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
 
+    class Meta:
+        verbose_name_plural = "sketches"
+
+    def __str__(self):
+        return 'owner: %s: workload_id: %s', (self.owner.username, self.workload_id)
+
 
 class Location(models.Model):
     street_address = models.CharField(max_length=200, blank=True, null=False)
     lng = models.FloatField(blank=False, null=False)
     lat = models.FloatField(blank=False, null=False)
+
+    def __str__(self):
+        return '%s, lng: %s, lat: %s' % (self.street_address or 'Unknown address', self.lng, self.lat)
 
 
 class WallPhotoWrapper(models.Model):
@@ -45,6 +58,9 @@ class WallPhotoWrapper(models.Model):
                                  blank=False, null=False)
     description = models.TextField(blank=True, null=False, default='Not provided')
 
+    def __str__(self):
+        return '%s:%s' % (self.owner, self.description[:50])
+
 
 class Restriction(models.Model):
     """The most mysterious class in AnyArt"""
@@ -55,7 +71,7 @@ class Restriction(models.Model):
 
 
 class AbstractFile(models.Model):
-    uploaded_at = models.DateTimeField(auto_now_add=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
 
     class Meta:
         abstract = True
