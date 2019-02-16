@@ -37,7 +37,7 @@ class Sketch(models.Model):
         verbose_name_plural = "sketches"
 
     def __str__(self):
-        return 'owner: %s: workload_id: %s', (self.owner.username, self.workload_id)
+        return 'owner: %s: workload_id: %s' % (self.owner.username, self.workload_id)
 
 
 class Location(models.Model):
@@ -82,6 +82,9 @@ class WallPhoto(AbstractFile):
                                 related_name='wall_photos', blank=False, null=False)
     photo = models.ImageField(storage=sb.PublicMediaStorage(), upload_to='wall_photos',
                               blank=False, null=False)
+
+    def __str__(self):
+        return 'wrapper: %s, photo: %s' % (self.wrapper_id, self.photo)
 
 
 class SketchImage(AbstractFile):
