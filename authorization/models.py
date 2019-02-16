@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db import models
 
+# ensure unique email field
+User._meta.get_field('email')._unique = True
 
 class UserProfile(models.Model):
     BASIC = 'bas'
