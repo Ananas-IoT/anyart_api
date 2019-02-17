@@ -96,7 +96,7 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
 
 class SketchSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(write_only=True)
-    sketches = SketchImageSerializer(many=True, read_only=True)
+    sketch_images = SketchImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Sketch

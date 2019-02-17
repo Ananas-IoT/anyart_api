@@ -1,5 +1,8 @@
+import os
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.dispatch import receiver
 
 from anyart_api import storage_backends as sb
 
@@ -86,10 +89,17 @@ class WallPhoto(AbstractFile):
     def __str__(self):
         return 'wrapper: %s, photo: %s' % (self.wrapper_id, self.photo)
 
+    @receiver(models.signals.post_delete, sender='workload.WallPhoto')
+    def delete_static_on_delete(sender, instance, using, **kwargs):
+        ...
+
+    @receiver(models.signals.post_save, sender='workload.WallPhoto')
+    def delete_static_on_change(sender, instance, using, **kwargs):
+        ...
 
 class SketchImage(AbstractFile):
     sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
-                               related_name='sketches')
+                               related_name='sketch_images')
     image = models.FileField(storage=sb.PublicMediaStorage(), upload_to='sketches',
                              blank=False, null=False)
 
