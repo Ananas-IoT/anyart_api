@@ -16,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gurman.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['gurman.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -127,7 +127,7 @@ USE_L10N = True
 USE_TZ = True
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=45),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
 }
 
 # -------------- AWS S3 -----------------
@@ -142,7 +142,7 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 # AWS_QUERYSTRING_EXPIRE = 3600
-AWS_STATIC_LOCATION = 'static'
+AWS_STATIC_LOCATION = 'img'
 
 
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
@@ -154,4 +154,12 @@ AWS_PUBLIC_MEDIA_LOCATION = 'public'
 DEFAULT_FILE_STORAGE = 'anyart_api.storage_backends.PublicMediaStorage'
 
 AWS_PRIVATE_MEDIA_LOCATION = 'private'
-PRIVATE_FILE_STORAGE = 'anyart_api.storage_backends.PrivateMediaStorage'
+PRIVATE_FILE_STORAGE = 'anyart_api.storage_backends.PrivateMediaStorage'#
+
+
+# -----  EMAIL VERIFICATION -----
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'anyart.iot@gmail.com'
+EMAIL_HOST_PASSWORD = 'ananas2123'
+EMAIL_PORT = 587

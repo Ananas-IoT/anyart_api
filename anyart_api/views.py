@@ -11,11 +11,11 @@ class HelloView(APIView):
     # permission_classes = (IsAuthenticated, IsArtist)
     parser_classes = (NestedMultipartParser, )
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         content = {
             'message': 'Hello, World!',
         }
-        return Response(content)
+        return Response('Hello World')
 
     def post(self, request):
         return Response(request.data)
