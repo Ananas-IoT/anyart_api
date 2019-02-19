@@ -161,5 +161,5 @@ PRIVATE_FILE_STORAGE = 'anyart_api.storage_backends.PrivateMediaStorage'#
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'anyart.iot@gmail.com'
-EMAIL_HOST_PASSWORD = 'ananas2123'
+EMAIL_HOST_PASSWORD = env('HOST_EMAIL_PASSWORD')
 EMAIL_PORT = 587
