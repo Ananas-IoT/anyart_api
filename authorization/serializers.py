@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -50,16 +51,21 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name']
         )
         user.set_password(validated_data['password'])
-        user.save()
+        try:
+            with transaction.atomic():
+                user.save()
+                user_profile = UserProfile(
+                    owner=user,
+                    rights=validated_data['rights']
+                )
 
-        user_profile = UserProfile(
-            owner=user,
-            rights=validated_data['rights']
-        )
+                # todo handle exceptions
+                request = self.context.get('view').request
+                send_verification_email(user, request)
 
-        request = self.context.get('view').request
-        send_verification_email(user, request)
-        user_profile.save()
+                user_profile.save()
+        except IntegrityError:
+            ...
 
         return user
 

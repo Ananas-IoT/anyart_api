@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 from anyart_api import storage_backends as sb
 
-
+# todo make atomic transactions
 class Workload(models.Model):
     JUST_CREATED = 1
     SKETCHES_ADDED = 2

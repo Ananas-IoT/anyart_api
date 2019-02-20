@@ -17,7 +17,6 @@ class UserCreateView(generics.CreateAPIView):
     serializer_class = RegisterUserSerializer
 
     def create(self, request, *args, **kwargs):
-        # rights = request.data.pop('rights')
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
