@@ -1,12 +1,12 @@
 import os
-
+import boto3
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.dispatch import receiver
-
+from anyart_api import settings
 from anyart_api import storage_backends as sb
 
-# todo make atomic transactions
+
 class Workload(models.Model):
     JUST_CREATED = 1
     SKETCHES_ADDED = 2
@@ -35,6 +35,7 @@ class Workload(models.Model):
 class Sketch(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
+    comment = models.TextField(blank=True, null=False, default='Not provided')
 
     class Meta:
         verbose_name_plural = "sketches"
@@ -91,17 +92,42 @@ class WallPhoto(AbstractFile):
 
     @receiver(models.signals.post_delete, sender='workload.WallPhoto')
     def delete_static_on_delete(sender, instance, using, **kwargs):
-        ...
+        s3 = boto3.resource('s3')
+        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
 
-    @receiver(models.signals.post_save, sender='workload.WallPhoto')
+    @receiver(models.signals.pre_save, sender='workload.WallPhoto')
     def delete_static_on_change(sender, instance, using, **kwargs):
-        ...
+        try:
+            old = WallPhoto.objects.get(pk=instance.pk)
+        except WallPhoto.DoesNotExist:
+            return None
+        s3 = boto3.resource('s3')
+        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
+
 
 class SketchImage(AbstractFile):
     sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
                                related_name='sketch_images')
     image = models.FileField(storage=sb.PublicMediaStorage(), upload_to='sketches',
                              blank=False, null=False)
+
+    @receiver(models.signals.post_delete, sender='workload.WallPhoto')
+    def delete_static_on_delete(sender, instance, using, **kwargs):
+        s3 = boto3.resource('s3')
+        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
+
+    @receiver(models.signals.pre_save, sender='workload.WallPhoto')
+    def delete_static_on_change(sender, instance, using, **kwargs):
+        try:
+            old = WallPhoto.objects.get(pk=instance.pk)
+        except WallPhoto.DoesNotExist:
+            return None
+        s3 = boto3.resource('s3')
+        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.image))).delete()
 
 
 class PhotoAfter(AbstractFile):

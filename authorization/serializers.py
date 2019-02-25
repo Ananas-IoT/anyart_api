@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from jwt.compat import text_type
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from authorization.models import UserProfile
@@ -60,12 +60,12 @@ class RegisterUserSerializer(serializers.ModelSerializer):
                 )
 
                 # todo handle exceptions
-                request = self.context.get('view').request
-                send_verification_email(user, request)
+                # request = self.context.get('view').request
+                # send_verification_email(user, request)
 
                 user_profile.save()
         except IntegrityError:
-            ...
+            return exceptions.ValidationError
 
         return user
 
@@ -78,6 +78,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Serializer for retrieving a fresh pair of tokens to already registered user"""
     @classmethod
     def get_token(cls, user):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
@@ -99,6 +100,7 @@ class ReadOnlyUserSerializer(serializers.ModelSerializer):
 
 
 def send_verification_email(user, request):
+    """Composes and sends email with verification token to selected email"""
     from django.contrib.sites.shortcuts import get_current_site
 
     user.is_active = False

@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from django.db import transaction, IntegrityError
+from rest_framework import serializers, exceptions
 
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
@@ -22,6 +23,7 @@ class WallPhotoSerializer(serializers.ModelSerializer):
         wrapper = validated_data.pop('wrapper', None)
 
         wall_photo = WallPhoto.objects.create(photo=photo, wrapper=wrapper)
+        wall_photo.save()
 
         return wall_photo
 
@@ -70,8 +72,17 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
         wall_photos_data = self.context.get('view').request.FILES
         wall_photo_wrapper = WallPhotoWrapper.objects.create(**validated_data, owner_id=owner_id,
                                                              location=location, workload=workload)
-        for wall_photo in wall_photos_data.values():
-            WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
+
+        try:
+            with transaction.atomic():
+                location.save()
+                workload.save()
+                wall_photo_wrapper.save()
+                for wall_photo in wall_photos_data.values():
+                    wall_photo = WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
+                    wall_photo.save()
+        except IntegrityError:
+            return exceptions.ValidationError
 
         return wall_photo_wrapper
 
@@ -108,8 +119,14 @@ class SketchSerializer(serializers.ModelSerializer):
         sketch = Sketch.objects.create(**validated_data, owner_id=owner_id)
         sketch_files_data = self.context.get('view').request.FILES
 
-        for image in sketch_files_data.values():
-            SketchImage.objects.create(image=image, sketch=sketch)
+        try:
+            with transaction.atomic():
+                sketch.save()
+                for image in sketch_files_data.values():
+                    sketch_image = SketchImage.objects.create(image=image, sketch=sketch)
+                    sketch_image.save()
+        except IntegrityError:
+            return exceptions.ValidationError
 
         return sketch
 
