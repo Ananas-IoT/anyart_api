@@ -64,6 +64,3 @@ class WallPhotoViewSet(viewsets.ModelViewSet):
     parser_classes = (NestedMultipartParser, )
     queryset = WallPhoto.objects.all()
     serializer_class = WallPhotoSerializer
-
-
-
