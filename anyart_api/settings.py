@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authorization.apps.AuthorizationConfig',
     'workload.apps.WorkloadConfig',
+    'approval.apps.ApprovalConfig',
     'corsheaders',
 ]
 

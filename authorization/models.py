@@ -15,8 +15,6 @@ class UserProfile(models.Model):
         (ARTIST, 'Artist'),
         (GOVERNMENT, 'GovernmentRepresentative')
     ]
-    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
-                              related_name='user_profile')
     rights = models.CharField(blank=False, max_length=50, choices=rights_types)
 
     class Meta:
@@ -34,7 +32,8 @@ class UserProfile(models.Model):
 
 
 class BasicUserProfile(UserProfile):
-    ...
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
+                                 related_name='basic_user_profile')
 
 
 class GovernmentUserProfile(UserProfile):
@@ -43,7 +42,10 @@ class GovernmentUserProfile(UserProfile):
     authority_choices = [
         (LCC, 'Lviv City Council')
     ]
-    authority = models.CharField(blank=False, null=False, choices=authority_choices)
+
+    authority = models.CharField(max_length=100, blank=False, null=False, choices=authority_choices)
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
+                                 related_name='gov_user_profile')
 
     def save(self, *args, **kwargs):
         rights_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
@@ -55,4 +57,5 @@ class GovernmentUserProfile(UserProfile):
 
 
 class ArtistUserProfile(UserProfile):
-    ...
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
+                                 related_name='artist_user_profile')
