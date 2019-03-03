@@ -27,8 +27,7 @@ class Workload(models.Model):
     requirements = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return 'initialized by %s, %s, %s' % (self.photo_wrappers[0].owner,
-                                              self.created_at.date(), self.created_at.time())
+        return 'initialized by %s, %s' % (self.created_at.date(), self.created_at.time())
 
 
 class Sketch(models.Model):
@@ -55,9 +54,9 @@ class Location(models.Model):
 class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='photo_wrappers',
                               blank=True, null=False)
-    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, related_name='photo_wrappers',
+    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, related_name='wall_photo_wrappers',
                                  blank=False, null=False)
-    location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrappers',
+    location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrapper',
                                  blank=False, null=False)
     description = models.TextField(blank=True, null=False, default='Not provided')
 

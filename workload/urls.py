@@ -1,27 +1,33 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework_nested.routers import NestedSimpleRouter
 
-from anyart_api import urls as ru
-from . import views
+from .views import (
+    WallPhotoWrapperViewSet, SketchViewSet, WallPhotoViewSet,
+    WorkloadViewSet, SketchImageViewSet, LocationViewSet)
 from rest_framework import routers
 
 
 router = routers.SimpleRouter()
-router.register(r'wall_photo_wrappers', views.WallPhotoWrapperViewSet)
+router.register('wall_photo_wrappers', WallPhotoWrapperViewSet, basename='wall_photo_wrapper')
+router.register('sketches', SketchViewSet, basename='sketch')
+router.register('wall_photos', WallPhotoViewSet, basename='wall_photo')
+router.register('workloads', WorkloadViewSet, basename='workload')
+router.register('locations', LocationViewSet, basename='location')
+
+workload_router = NestedSimpleRouter(router, 'workloads', lookup='workload')
+workload_router.register('wall_photo_wrappers', WallPhotoWrapperViewSet, basename='workload-wall_photo_wrapper')
+workload_router.register('sketches', SketchViewSet, basename='workload-sketch')
+
+wall_photo_wrapper_router = NestedSimpleRouter(workload_router, 'wall_photo_wrappers', lookup='wall_photo_wrapper')
+wall_photo_wrapper_router.register('wall_photos', WallPhotoViewSet, basename='wrapper-wall_photo')
+wall_photo_wrapper_router.register('locations', LocationViewSet, basename='wrapper-location')
+
+sketch_router = NestedSimpleRouter(workload_router, 'sketches', lookup='sketch')
+sketch_router.register('sketch_images', SketchImageViewSet, basename='sketch-sketch_image')
 
 urlpatterns = [
-    # path('wall_photo_wrappers/', views.WallPhotoWrapperViewSet.as_view(ru.list_dict),
-    #      name='wall_photo_wrapper-list'),
-    # path('wall_photo_wrappers/<int:pk>', views.WallPhotoWrapperViewSet.as_view(ru.detail_dict),
-    #      name='wall_photo_wrapper-detail'),
-    path('sketches/', views.SketchViewSet.as_view(ru.list_dict),
-         name='sketch-list'),
-    path('sketches/<int:pk>', views.SketchViewSet.as_view(ru.detail_dict),
-         name='sketch-detail'),
-    path('wall_photo/', views.WallPhotoViewSet.as_view(ru.list_dict),
-         name='wall_photo-list'),
-    path('wall_photo/<int:pk>', views.WallPhotoViewSet.as_view(ru.detail_dict),
-         name='wall_photo-detail'),
-    # path('wall_photo_wrappers/<int:pk/sketches/<int:pk>', )
+    path('', include(router.urls)),
+    path('', include(workload_router.urls)),
+    path('', include(wall_photo_wrapper_router.urls)),
+    path('', include(sketch_router.urls)),
 ]
-
-urlpatterns += router.urls
