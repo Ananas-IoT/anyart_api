@@ -28,18 +28,27 @@ class UserModelSerializer(serializers.ModelSerializer):
     """Property to determine which nested serializer to use for UserProfile"""
     def get_user_profile_class(self, rights=None, *args, **kwargs):
         if not rights:
-            rights = self.validated_data['rights']
+            rights = self.data['rights']
         return {
             'basic': BasicUserProfile,
             'artist': ArtistUserProfile,
             'gov': GovernmentUserProfile
         }[rights]
-
     user_profile_class = property(get_user_profile_class)
 
     def get_user_profile(self, *args, **kwargs):
         user_profile = self.get_user_profile_class(*args, **kwargs)
         return user_profile(*args, **kwargs)
+
+    def get_user_profile_serializer(self, rights=None, *args, **kwargs):
+        if not rights:
+            rights = self.data['rights']
+        return {
+            'basic': BasicUserProfileSerializer,
+            'artist': ArtistUserProfileSerializer,
+            'gov': GovUserProfileSerializer
+        }[rights]
+    user_profile_serializer = property(get_user_profile_serializer)
 
 
 class RegisterUserSerializer(UserModelSerializer):
@@ -130,9 +139,9 @@ class MyTokenObtainPairSerializer(UserModelSerializer, TokenObtainPairSerializer
     @classmethod
     def get_token(cls, user):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
-        user_model = get_user_model()
+
         # Add custom claims
-        token['rights'] = user_model.filter(owner=user).get().rights
+        token['rights'] = user.rights
 
         return token
 
@@ -141,13 +150,11 @@ class ReadOnlyUserSerializer(UserModelSerializer):
     def __init__(self, *args, **kwargs):
         super(ReadOnlyUserSerializer, self).__init__(*args, **kwargs)
 
-        self.fields['user_profile'] = self.user_profile_class
-
-    username = serializers.CharField(required=False)
+        self.fields['user_profile'] = self.user_profile_serializer(many=False, read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'user_profile', 'rights')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'rights')
         extra_kwargs = {'password': {'write_only': True}}
 
 

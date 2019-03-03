@@ -11,7 +11,7 @@ def retrieve_payload(request):
     payload = payload[1:-1]
 
     missing_data = len(payload) % 4
-    payload = str(b.b64decode(payload + '=' * missing_data), 'UTF8MB4')
+    payload = str(b.b64decode(payload + '=' * missing_data), 'utf-8')
     payload = ast.literal_eval(payload)
 
     return payload
