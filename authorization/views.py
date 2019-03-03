@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -13,7 +13,8 @@ from authorization.tokens import account_activation_token
 
 class UserCreateView(generics.CreateAPIView):
     """Handles creating Users."""
-    queryset = User.objects.all()
+    user_class = get_user_model()
+    queryset = user_class.objects.all()
     serializer_class = RegisterUserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -36,10 +37,11 @@ def profile(request):
 
 @api_view(http_method_names=['GET'])
 def verify_email(request, uidb64, token):
+    user_class = get_user_model()
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = user_class.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, user_class.DoesNotExist):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True

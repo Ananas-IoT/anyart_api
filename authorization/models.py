@@ -1,12 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from django.db import models
-
-# ensure unique email field
-User._meta.get_field('email')._unique = True
+from django.contrib.auth.models import AbstractUser
 
 
-class UserProfile(models.Model):
+class User(AbstractUser):
     BASIC = 'basic'
     ARTIST = 'artist'
     GOVERNMENT = 'gov'
@@ -15,20 +12,25 @@ class UserProfile(models.Model):
         (ARTIST, 'Artist'),
         (GOVERNMENT, 'GovernmentRepresentative')
     ]
-    rights = models.CharField(blank=False, max_length=50, choices=rights_types)
 
-    class Meta:
-        abstract = True
+    email = models.EmailField('email address', blank=True, unique=True)
+    rights = models.CharField(blank=False, max_length=50, choices=rights_types)
 
     def save(self, *args, **kwargs):
         rights_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
         if self.rights in rights_list:
-            super(UserProfile, self).save(*args, **kwargs)
+            super(User, self).save(*args, **kwargs)
         else:
             raise Exception("rights field can only take certain values: 'basic', 'artist', 'gov'")
 
+
+class UserProfile(models.Model):
+
+    class Meta:
+        abstract = True
+
     def __str__(self):
-        return '%s: %s' % (self.owner.username, self.rights)
+        return '%s' % self.owner.username
 
 
 class BasicUserProfile(UserProfile):
