@@ -28,7 +28,7 @@ class UserModelSerializer(serializers.ModelSerializer):
     """Property to determine which nested serializer to use for UserProfile"""
     def get_user_profile_class(self, rights=None, *args, **kwargs):
         if not rights:
-            rights = self.data['rights']
+            rights = self.validated_data['rights']
         return {
             'basic': BasicUserProfile,
             'artist': ArtistUserProfile,
@@ -38,7 +38,7 @@ class UserModelSerializer(serializers.ModelSerializer):
 
     def get_user_profile(self, *args, **kwargs):
         user_profile = self.get_user_profile_class(*args, **kwargs)
-        return user_profile(*args, **kwargs)
+        return user_profile.objects.create(*args, **kwargs)
 
     def get_user_profile_serializer(self, rights=None, *args, **kwargs):
         if not rights:
@@ -84,13 +84,17 @@ class RegisterUserSerializer(UserModelSerializer):
 
     def create(self, validated_data):
         user_class = get_user_model()
-        user = user_class(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            rights=validated_data['rights']
-        )
+        try:
+            user = user_class.objects.create(
+                email=validated_data['email'],
+                username=validated_data['username'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                rights=validated_data['rights']
+            )
+        except Exception:
+            raise serializers.ValidationError
+
         user.set_password(validated_data['password'])
         try:
             with transaction.atomic():

@@ -33,7 +33,7 @@ class Workload(models.Model):
 class Sketch(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
-    comment = models.TextField(blank=True, null=False, default='Not provided')
+    sketch_description = models.TextField(blank=True, null=False, default='Not provided')
 
     class Meta:
         verbose_name_plural = "sketches"
@@ -54,7 +54,7 @@ class Location(models.Model):
 class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='photo_wrappers',
                               blank=True, null=False)
-    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, related_name='wall_photo_wrappers',
+    workload = models.OneToOneField('workload.Workload', on_delete=models.CASCADE, related_name='wall_photo_wrapper',
                                  blank=False, null=False)
     location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrapper',
                                  blank=False, null=False)
@@ -125,7 +125,7 @@ class SketchImage(AbstractFile):
             return None
         s3 = boto3.resource('s3')
         s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
-                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.image))).delete()
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
 
 
 class PhotoAfter(AbstractFile):

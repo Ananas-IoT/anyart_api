@@ -115,6 +115,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -128,10 +131,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-}
 
 # -------------- AWS S3 -----------------
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
