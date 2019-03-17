@@ -54,7 +54,20 @@ class WallPhotoWrapperDecision(GovDecision):
 
 
 class SketchVote(models.Model):
+    LIKE = 1
+    DISLIKE = 0
+    user_vote_choices = [
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike')
+    ]
     sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False)
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
-    vote = models.IntegerField(blank=False, null=False)
+    vote = models.IntegerField(blank=False, null=False, choices=user_vote_choices)
     created_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        vote_list = [self.LIKE, self.DISLIKE]
+        if self.vote in vote_list:
+            super(SketchVote, self).save(*args, **kwargs)
+        else:
+            raise Exception("vote field can only take certain values: 0, 1")
