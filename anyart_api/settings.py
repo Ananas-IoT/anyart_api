@@ -16,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gurman.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -47,7 +47,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 ROOT_URLCONF = 'anyart_api.urls'
@@ -82,7 +81,11 @@ DATABASES = {
         'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '3306',
-    }
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+    },
+
 }
 
 
@@ -108,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'anyart_api.backends.EmailAuthBackend')
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

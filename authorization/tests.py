@@ -65,3 +65,14 @@ class AuthorizationTest(APITestCase):
 
         self.assertEqual(log_response.status_code, status.HTTP_200_OK)
         self.assertEqual(list(log_response.data.keys()), ['refresh', 'access'])
+
+        data = {
+            'username': 'username',
+            'password': 'password',
+            'email': 'username'
+        }
+
+        log_response = self.client.post(url, data, format='json')
+
+        self.assertEqual(log_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(list(log_response.data.keys()), ['refresh', 'access'])

@@ -35,4 +35,5 @@ urlpatterns = [
          views.HelloView.as_view(), name='hello'),
     path('authorization/', include('authorization.urls')),
     path('workload/', include('workload.urls')),
+    path('approval/', include('approval.urls'))
 ]

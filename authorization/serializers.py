@@ -140,6 +140,11 @@ class GovUserProfileSerializer(serializers.ModelSerializer):
 
 class MyTokenObtainPairSerializer(UserModelSerializer, TokenObtainPairSerializer):
     """Serializer for retrieving a fresh pair of tokens to already registered user"""
+
+    class Meta:
+        model = get_user_model()
+        exclude = ('email', )
+
     @classmethod
     def get_token(cls, user):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)

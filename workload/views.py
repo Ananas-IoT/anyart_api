@@ -1,6 +1,9 @@
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.response import Response
 import copy
+
+from rest_framework import viewsets
+
 from authorization.permissions import retrieve_payload
 from workload.serializers import (WallPhotoWrapperSerializer, SketchSerializer,
                                   WallPhotoSerializer, WorkloadSerializer,
@@ -62,7 +65,7 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
         # Lookup fields & foreign keys
         # if data contains no workload_id, fetch it from url
         try:
-            if not ser_data['workload_pk']:
+            if not ser_data.get('workload_pk'):
                 ser_data['workload_id'] = kwargs['workload_pk']
         except KeyError:
             return Response('Unable to retrieve workload_id', status=status.HTTP_400_BAD_REQUEST)
@@ -94,7 +97,7 @@ class SketchViewSet(viewsets.ModelViewSet):
     queryset = Sketch.objects.all()
     serializer_class = SketchSerializer
 
-    def create(self, request, workload_pk=None, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         ser_data = copy.deepcopy(request.data)
         # User Id retrieval
         try:
@@ -107,7 +110,7 @@ class SketchViewSet(viewsets.ModelViewSet):
         # if data contains no workload_id, fetch it from url
         try:
             if not ser_data.get('workload_id'):
-                ser_data['workload_id'] = workload_pk
+                ser_data['workload_id'] = kwargs['workload_pk']
         except KeyError:
             return Response('Unable to retrieve workload_id', status=status.HTTP_400_BAD_REQUEST)
 
@@ -130,7 +133,9 @@ class SketchViewSet(viewsets.ModelViewSet):
         return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
-        return Sketch.objects.filter(workload=self.kwargs.pop('workload_pk', None)) or Sketch.objects.all()
+        if self.kwargs.get('workload_pk'):
+            return Sketch.objects.filter(workload=self.kwargs.get('workload_pk', None))
+        return Sketch.objects.all()
 
 
 class WallPhotoViewSet(viewsets.ModelViewSet):

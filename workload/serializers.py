@@ -7,7 +7,7 @@ from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Ske
 class WorkloadSerializer(serializers.Serializer):
     lng = serializers.FloatField(required=True, write_only=True)
     lat = serializers.FloatField(required=True, write_only=True)
-    requirements = serializers.CharField(required=False, )
+    requirements = serializers.CharField(required=False, write_only=True)
     description = serializers.CharField(required=True, write_only=True)
     user_id = serializers.CharField(write_only=True, required=False)
 
@@ -256,5 +256,3 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = '__all__'
-
-

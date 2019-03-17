@@ -94,15 +94,15 @@ class WallPhoto(AbstractFile):
         s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
                   '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
 
-    @receiver(models.signals.pre_save, sender='workload.WallPhoto')
-    def delete_static_on_change(sender, instance, using, **kwargs):
-        try:
-            old = WallPhoto.objects.get(pk=instance.pk)
-        except WallPhoto.DoesNotExist:
-            return None
-        s3 = boto3.resource('s3')
-        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
-                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
+    # @receiver(models.signals.pre_save, sender='workload.WallPhoto')
+    # def delete_static_on_change(sender, instance, using, **kwargs):
+    #     try:
+    #         old = WallPhoto.objects.get(pk=instance.pk)
+    #     except WallPhoto.DoesNotExist:
+    #         return None
+    #     s3 = boto3.resource('s3')
+    #     s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+    #               '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
 
 
 class SketchImage(AbstractFile):
@@ -117,15 +117,15 @@ class SketchImage(AbstractFile):
         s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
                   '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
 
-    @receiver(models.signals.pre_save, sender='workload.SketchImage')
-    def delete_static_on_change(sender, instance, using, **kwargs):
-        try:
-            old = WallPhoto.objects.get(pk=instance.pk)
-        except WallPhoto.DoesNotExist:
-            return None
-        s3 = boto3.resource('s3')
-        s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
-                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
+    # @receiver(models.signals.pre_save, sender='workload.SketchImage')
+    # def delete_static_on_change(sender, instance, using, **kwargs):
+    #     try:
+    #         old = WallPhoto.objects.get(pk=instance.pk)
+    #     except WallPhoto.DoesNotExist:
+    #         return None
+    #     s3 = boto3.resource('s3')
+    #     s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
+    #               '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(old.photo))).delete()
 
 
 class PhotoAfter(AbstractFile):

@@ -14,7 +14,7 @@ class User(AbstractUser):
     ]
 
     email = models.EmailField('email address', blank=True, unique=True)
-    rights = models.CharField(blank=False, max_length=50, choices=rights_types)
+    rights = models.CharField(blank=False, max_length=50, choices=rights_types, default=BASIC)
 
     def save(self, *args, **kwargs):
         rights_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
