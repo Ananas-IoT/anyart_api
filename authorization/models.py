@@ -17,7 +17,7 @@ class User(AbstractUser):
     rights = models.CharField(blank=False, max_length=50, choices=rights_types, default=BASIC)
 
     def save(self, *args, **kwargs):
-        rights_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
+        rights_list = [choice[0] for choice in self.rights_types]
         if self.rights in rights_list:
             super(User, self).save(*args, **kwargs)
         else:
@@ -39,10 +39,18 @@ class BasicUserProfile(UserProfile):
 
 
 class GovernmentUserProfile(UserProfile):
-    # todo complete authority choices
-    LCC = 'lcc'
+    CULTURE_MANAGEMENT = 'Culture Management'
+    TOURISM_MANAGEMENT = 'Tourism Management'
+    IT_MANAGEMENT = 'IT management'
+    HISTORY_PRESERVATION_MANAGEMENT = 'History Preservation Management'
+    MAIN_ARCHITECT = 'Main Architect'
+
     authority_choices = [
-        (LCC, 'Lviv City Council')
+        (CULTURE_MANAGEMENT, 'Culture Management'),
+        (TOURISM_MANAGEMENT, 'Tourism Management'),
+        (IT_MANAGEMENT, 'IT management'),
+        (HISTORY_PRESERVATION_MANAGEMENT, 'History Preservation Management'),
+        (MAIN_ARCHITECT, 'Main Architect')
     ]
 
     authority = models.CharField(max_length=100, blank=False, null=False, choices=authority_choices)
@@ -50,12 +58,11 @@ class GovernmentUserProfile(UserProfile):
                                  related_name='gov_user_profile')
 
     def save(self, *args, **kwargs):
-        rights_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
-        authority_list = [self.LCC, ]
-        if self.rights in rights_list and self.authority in authority_list:
+        authority_list = [choice[0] for choice in self.authority_choices]
+        if self.authority in authority_list:
             super(UserProfile, self).save(*args, **kwargs)
         else:
-            raise Exception("rights field can only take certain values: 'basic', 'artist', 'gov'")
+            raise Exception("authority choices must be only of certain types")
 
 
 class ArtistUserProfile(UserProfile):

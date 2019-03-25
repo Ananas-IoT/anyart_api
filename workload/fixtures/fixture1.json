@@ -1,0 +1,14 @@
+[
+  {
+    "model": "authorization.User",
+    "pk": 12,
+    "fields": {
+      "first_name": "John",
+      "last_name": "Lennon",
+      "username": "johny",
+      "password": "qwerty", 
+      "rights": "basic",
+      "email": "john@mail.com"
+    }
+  }
+]

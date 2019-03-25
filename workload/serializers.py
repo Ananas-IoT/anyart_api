@@ -1,6 +1,8 @@
 from django.db import transaction, IntegrityError
 from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
+
+from approval.models import ApprovalGroup
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
 
@@ -43,6 +45,9 @@ class WorkloadSerializer(serializers.Serializer):
                 for wall_photo in wall_photos_data.values():
                     wall_photo = WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
                     wall_photo.save()
+                # initialize ApprovalGroup
+                ApprovalGroup.objects.create(workload=workload)
+
         except IntegrityError:
             return exceptions.ValidationError('error on Workload serializer')
 

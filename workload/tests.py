@@ -98,7 +98,7 @@ class MainWorkloadTest(APITestCase):
         sketch_response = self.client.get(url)
         self.assertEqual(sketch_response.status_code, status.HTTP_200_OK)
 
-        # test put
+        # test put (changes sketch description)
         url = reverse('workload-sketch-detail', kwargs={'workload_pk': Workload.objects.first().id,
                                                         'pk': Sketch.objects.first().id})
         data = {
