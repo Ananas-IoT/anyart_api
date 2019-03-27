@@ -46,7 +46,7 @@ class WorkloadSerializer(serializers.Serializer):
                     wall_photo = WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
                     wall_photo.save()
                 # initialize ApprovalGroup
-                ApprovalGroup.objects.create(workload=workload)
+                approval_group = ApprovalGroup.objects.create(workload=workload)
 
         except IntegrityError:
             return exceptions.ValidationError('error on Workload serializer')

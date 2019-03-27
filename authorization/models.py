@@ -53,7 +53,8 @@ class GovernmentUserProfile(UserProfile):
         (MAIN_ARCHITECT, 'Main Architect')
     ]
 
-    authority = models.CharField(max_length=100, blank=False, null=False, choices=authority_choices)
+    authority = models.CharField(max_length=100, blank=False, null=False,
+                                 choices=authority_choices, default=IT_MANAGEMENT)
     owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
                                  related_name='gov_user_profile')
 
@@ -68,3 +69,5 @@ class GovernmentUserProfile(UserProfile):
 class ArtistUserProfile(UserProfile):
     owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
                                  related_name='artist_user_profile')
+
+
