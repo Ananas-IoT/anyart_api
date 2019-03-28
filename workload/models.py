@@ -66,10 +66,12 @@ class WallPhotoWrapper(models.Model):
 
 class Restriction(models.Model):
     """The most mysterious class in AnyArt"""
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
     location = models.ForeignKey('workload.Location', on_delete=models.CASCADE, blank=False, null=False)
+    reason = models.TextField(blank=True, null=True)
 
 
-"""------------------------------------------------------FILES-------------------------------------------------------"""
+"""-----------------------------------------------------FILES------------------------------------------------------"""
 
 
 class AbstractFile(models.Model):

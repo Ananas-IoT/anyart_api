@@ -5,10 +5,21 @@ from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from approval.models import ApprovalGroup
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
+"""
+Create two functions 
+1. def get_street_address(lng, lat)
+2. def is_building(lng=None, lat=None, street_address=None) 
+
+3. def get_owner()
+"""
+
+
 
 class WorkloadSerializer(serializers.Serializer):
-    lng = serializers.FloatField(required=True, write_only=True)
-    lat = serializers.FloatField(required=True, write_only=True)
+    # todo add street address
+    street_address = serializers.CharField(required=False, write_only=True)
+    lng = serializers.FloatField(required=False, write_only=True)
+    lat = serializers.FloatField(required=False, write_only=True)
     requirements = serializers.CharField(required=False, write_only=True)
     description = serializers.CharField(required=True, write_only=True)
     user_id = serializers.CharField(write_only=True, required=False)
@@ -256,8 +267,13 @@ class SketchImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class LocationSerializer(serializers.ModelSerializer):
+class LocationSerializer(serializers.Serializer):
+    lng = serializers.FloatField()
+    lat = serializers.FloatField()
+    street_address = serializers.CharField()
 
-    class Meta:
-        model = Location
-        fields = '__all__'
+
+
+class LimitationSerializer(serializers.Serializer):
+    pass
+

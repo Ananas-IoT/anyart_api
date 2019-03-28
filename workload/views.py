@@ -7,7 +7,8 @@ from rest_framework import viewsets
 from authorization.permissions import retrieve_payload
 from workload.serializers import (WallPhotoWrapperSerializer, SketchSerializer,
                                   WallPhotoSerializer, WorkloadSerializer,
-                                  SketchImageSerializer, LocationSerializer, ReadOnlyWorkloadSerializer)
+                                  SketchImageSerializer, LocationSerializer, ReadOnlyWorkloadSerializer,
+                                  LimitationSerializer)
 from .models import WallPhotoWrapper, Sketch, WallPhoto, Workload, SketchImage, Location
 
 
@@ -201,5 +202,9 @@ class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = LocationSerializer
 
     def get_queryset(self):
-        return Location.objects.filter(photo_wrapper=self.kwargs.pop('wall_photo_wrapper_pk', None)) \
+        return Location.objects.filter(photo_wrapper=self.kwargs.pop('workload_pk', None)) \
                or Location.objects.all()
+
+
+class LimitationViewSet(viewsets.ModelViewSet):
+    serializer_class = LimitationSerializer
