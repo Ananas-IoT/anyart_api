@@ -1,9 +1,11 @@
 import boto3
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 from django.dispatch import receiver
 from anyart_api import settings
 from anyart_api import storage_backends as sb
+from approval.models import WallPhotoWrapperDecision
 
 
 class Workload(models.Model):
@@ -55,9 +57,9 @@ class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='photo_wrappers',
                               blank=True, null=False)
     workload = models.OneToOneField('workload.Workload', on_delete=models.CASCADE, related_name='wall_photo_wrapper',
-                                 blank=False, null=False)
+                                    blank=False, null=False)
     location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrapper',
-                                 blank=False, null=False)
+                                    blank=False, null=False)
     description = models.TextField(blank=True, null=False, default='Not provided')
 
     def __str__(self):
@@ -69,7 +71,7 @@ class Restriction(models.Model):
     location = models.ForeignKey('workload.Location', on_delete=models.CASCADE, blank=False, null=False)
 
 
-"""------------------------------------------------------FILES-------------------------------------------------------"""
+"""---------------------------------------------------FILES------------------------------------------------------"""
 
 
 class AbstractFile(models.Model):

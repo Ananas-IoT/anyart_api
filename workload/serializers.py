@@ -1,17 +1,21 @@
+from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
 from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
-from approval.models import ApprovalGroup
+from approval.models import WallPhotoWrapperDecision, SketchDecision
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
 
 class WorkloadSerializer(serializers.Serializer):
     lng = serializers.FloatField(required=True, write_only=True)
     lat = serializers.FloatField(required=True, write_only=True)
-    requirements = serializers.CharField(required=False, write_only=True)
     description = serializers.CharField(required=True, write_only=True)
     user_id = serializers.CharField(write_only=True, required=False)
+    images = serializers.ListField(child=serializers.ImageField(
+        allow_empty_file=False,
+        use_url=False
+    ), required=True, write_only=True)
 
     self = serializers.HyperlinkedIdentityField(view_name='workload-detail')
     wall_photo_wrapper = NestedHyperlinkedRelatedField(
@@ -25,16 +29,16 @@ class WorkloadSerializer(serializers.Serializer):
         owner_id = int(validated_data.pop('user_id', None))
         lng = validated_data.pop('lng', None)
         lat = validated_data.pop('lat', None)
-        requirements = validated_data.pop('requirements', None)
         description = validated_data.pop('description', None)
 
         # Object creation
-        workload = Workload.objects.create(requirements=requirements)
+        workload = Workload.objects.create()
         location = Location.objects.create(lng=lng, lat=lat)
         wall_photo_wrapper = WallPhotoWrapper.objects.create(description=description, owner_id=owner_id,
                                                              location=location, workload=workload)
-        # Files
-        wall_photos_data = self.context.get('view').request.FILES
+
+        # decisions
+        groups = Group.objects.all()
 
         # Saving & wall photo uploading
         try:
@@ -42,11 +46,15 @@ class WorkloadSerializer(serializers.Serializer):
                 location.save()
                 workload.save()
                 wall_photo_wrapper.save()
-                for wall_photo in wall_photos_data.values():
+                for wall_photo in list(validated_data.pop('images')):
                     wall_photo = WallPhoto.objects.create(photo=wall_photo, wrapper=wall_photo_wrapper)
                     wall_photo.save()
-                # initialize ApprovalGroup
-                approval_group = ApprovalGroup.objects.create(workload=workload)
+
+                # creating decisions
+                for group in groups:
+                    decision = WallPhotoWrapperDecision.objects.create(group_role=group,
+                                                                       wall_photo_wrapper=wall_photo_wrapper)
+                    decision.save()
 
         except IntegrityError:
             return exceptions.ValidationError('error on Workload serializer')
@@ -153,6 +161,10 @@ class SketchSerializer(serializers.ModelSerializer):
     workload_id = serializers.IntegerField(write_only=True, required=False)
     user_id = serializers.CharField(write_only=True, required=False)
     sketch_images = serializers.SerializerMethodField()
+    images = serializers.ListField(child=serializers.ImageField(
+        allow_empty_file=False,
+        use_url=False
+    ), required=True, write_only=True)
 
     def get_sketch_images(self, instance):
         images = []
@@ -167,20 +179,27 @@ class SketchSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Data retrieval
         owner_id = int(validated_data.pop('user_id'))
+        images = validated_data.pop('images')
 
         # Object creation
         sketch = Sketch.objects.create(**validated_data, owner_id=owner_id)
 
-        # Files
-        sketch_files_data = self.context.get('view').request.FILES
+        # decisions
+        groups = Group.objects.all()
 
         # Saving & creating sketch images
         try:
             with transaction.atomic():
                 sketch.save()
-                for image in sketch_files_data.values():
+                for image in images:
                     sketch_image = SketchImage.objects.create(image=image, sketch=sketch)
                     sketch_image.save()
+
+                # creating decisions
+                for group in groups:
+                    decision = SketchDecision.objects.create(group_role=group,
+                                                             sketch=sketch)
+                    decision.save()
         except IntegrityError:
             return exceptions.ValidationError
 

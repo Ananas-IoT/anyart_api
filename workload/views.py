@@ -18,12 +18,12 @@ class WorkloadViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         ser_data = copy.deepcopy(request.data)
-        # User Id retrieval
+        # User retrieval
         try:
-            user_id = retrieve_payload(request)['user_id']
+            user = request.user
         except KeyError:
             return Response('Either token is invalid or not present', status=status.HTTP_401_UNAUTHORIZED)
-        ser_data['user_id'] = user_id
+        ser_data['user_id'] = user.id
 
         # Serializer
         serializer = self.get_serializer(data=ser_data)
