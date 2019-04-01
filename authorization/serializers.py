@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.mail import EmailMessage
 from django.db import transaction, IntegrityError
 from django.template.loader import render_to_string
@@ -57,11 +58,14 @@ class RegisterUserSerializer(UserModelSerializer):
 
     access = serializers.SerializerMethodField()
     refresh = serializers.SerializerMethodField()
+    authority = serializers.CharField(write_only=True, required=False)
+
+    gov_user_profile = serializers.SlugRelatedField(slug_field='authority', read_only=True)
 
     class Meta:
         model = get_user_model()
         fields = ('id', 'username', 'password', 'first_name', 'last_name', 'email',
-                  'access', 'refresh', 'rights')
+                  'access', 'refresh', 'rights', 'authority', 'gov_user_profile')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_access(self, user):
@@ -86,21 +90,26 @@ class RegisterUserSerializer(UserModelSerializer):
         user_class = get_user_model()
         try:
             user = user_class.objects.create(
-                email=validated_data['email'],
-                username=validated_data['username'],
-                first_name=validated_data['first_name'],
-                last_name=validated_data['last_name'],
-                rights=validated_data['rights']
+                email=validated_data.pop('email'),
+                username=validated_data.pop('username'),
+                first_name=validated_data.pop('first_name'),
+                last_name=validated_data.pop('last_name'),
+                rights=validated_data.pop('rights')
             )
         except Exception:
             raise serializers.ValidationError
+        authority = validated_data.get('authority', None)
+        if authority:
+            group = Group.objects.filter(name=authority).get()
+            user.groups.add(group)
 
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data.pop('password'))
         try:
             with transaction.atomic():
                 user.save()
                 user_profile = self.get_user_profile(
                     owner=user,
+                    **validated_data
                 )
 
                 # request = self.context.get('view').request
