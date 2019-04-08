@@ -14,9 +14,9 @@ SECRET_KEY = env('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost', '35.234.78.240']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'anyart_db',
-        'USER': 'root',
-        'PASSWORD': 'admin',
+        'USER': 'debian-sys-maint',
+        'PASSWORD': 'r7oiSraTQX5tRxBM',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

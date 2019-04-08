@@ -6,14 +6,14 @@ from subprocess import call
 
 remove_dirs = ['authorization/migrations', 'workload/migrations', 'approval/migrations']
 for remove_dir in remove_dirs:
-    shutil.rmtree(remove_dir)
+    shutil.rmtree(remove_dir, ignore_errors=True)
 
 # recreate db
 try:
     my_SQL_connection = mysql.connector.connect(host='localhost',
                                                 database='anyart_db',
-                                                user='root',
-                                                password='admin')
+                                                user='debian-sys-maint',
+                                                password='r7oiSraTQX5tRxBM')
     sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
     cursor = my_SQL_connection.cursor()
     cursor.execute(sql_query)
@@ -23,6 +23,7 @@ except Error as e:
 finally:
     if my_SQL_connection.is_connected():
         my_SQL_connection.close()
+
 
 # makemigrations
 apps = ['authorization', 'workload', 'approval']
