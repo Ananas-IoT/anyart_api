@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'anyart_db',
-        'USER': 'debian-sys-maint',
-        'PASSWORD': 'r7oiSraTQX5tRxBM',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

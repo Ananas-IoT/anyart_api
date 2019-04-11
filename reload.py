@@ -9,20 +9,17 @@ for remove_dir in remove_dirs:
     shutil.rmtree(remove_dir, ignore_errors=True)
 
 # recreate db
-try:
-    my_SQL_connection = mysql.connector.connect(host='localhost',
-                                                database='anyart_db',
-                                                user='debian-sys-maint',
-                                                password='r7oiSraTQX5tRxBM')
-    sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
-    cursor = my_SQL_connection.cursor()
-    cursor.execute(sql_query)
-    cursor.close()
-except Error as e:
-    print('SQL error: ', e)
-finally:
-    if my_SQL_connection.is_connected():
-        my_SQL_connection.close()
+
+my_SQL_connection = mysql.connector.connect(host='localhost',
+                                            user='admin',
+                                            password='admin')
+sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
+cursor = my_SQL_connection.cursor()
+cursor.execute(sql_query)
+cursor.close()
+
+if my_SQL_connection.is_connected():
+    my_SQL_connection.close()
 
 
 # makemigrations
