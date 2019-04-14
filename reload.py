@@ -9,7 +9,6 @@ for remove_dir in remove_dirs:
     shutil.rmtree(remove_dir, ignore_errors=True)
 
 # recreate db
-
 my_SQL_connection = mysql.connector.connect(host='localhost',
                                             user='admin',
                                             password='admin')

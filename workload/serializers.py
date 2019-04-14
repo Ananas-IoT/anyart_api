@@ -125,6 +125,7 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
         model = WallPhotoWrapper
         fields = '__all__'
 
+
     def create(self, validated_data):
         # Data retrieval
         owner_id = int(validated_data.pop('user_id'))

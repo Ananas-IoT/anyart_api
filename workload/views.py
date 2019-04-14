@@ -92,6 +92,20 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
         return WallPhotoWrapper.objects.filter(workload=self.kwargs.pop('workload_pk', None)) or \
                WallPhotoWrapper.objects.all()
 
+    def destroy(self, request, pk=None, *args, **kwargs):
+        # import pdb; pdb.set_trace()
+        try:
+            wpw = WallPhotoWrapper.objects.get(id=pk)
+            workload = wpw.workload
+            wpw.workload.sketch_set.all().delete()
+            wpw.delete()
+            workload.delete()
+            return Response("Model deleted", status=status.HTTP_200_OK)
+        except WallPhotoWrapper.DoesNotExist:
+            return Response(f"No model with this id: {pk}", status=status.HTTP_400_BAD_REQUEST)
+        return Response("Error destroying model", status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
 class SketchViewSet(viewsets.ModelViewSet):
     queryset = Sketch.objects.all()
@@ -134,8 +148,10 @@ class SketchViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.kwargs.get('workload_pk'):
-            return Sketch.objects.filter(workload=self.kwargs.get('workload_pk', None))
+            return Sketch.objects.filter(id=self.kwargs.get('pk', None), workload=self.kwargs.get('workload_pk', None))
         return Sketch.objects.all()
+
+    
 
 
 class WallPhotoViewSet(viewsets.ModelViewSet):

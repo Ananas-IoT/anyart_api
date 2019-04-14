@@ -117,7 +117,7 @@ class SketchImage(AbstractFile):
     def delete_static_on_delete(sender, instance, using, **kwargs):
         s3 = boto3.resource('s3')
         s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
-                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.image))).delete()
 
     # @receiver(models.signals.pre_save, sender='workload.SketchImage')
     # def delete_static_on_change(sender, instance, using, **kwargs):

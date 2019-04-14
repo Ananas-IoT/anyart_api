@@ -14,9 +14,9 @@ SECRET_KEY = env('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost', '35.234.78.240']
+ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost', '35.234.78.240', '192.168.99.101']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
