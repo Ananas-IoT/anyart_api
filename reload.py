@@ -10,7 +10,8 @@ for remove_dir in remove_dirs:
 
 # recreate db
 my_SQL_connection = mysql.connector.connect(host='localhost',
-                                            user='admin',
+                                            user='anyart',
+                                            database='anyart_db',
                                             password='admin')
 sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
 cursor = my_SQL_connection.cursor()

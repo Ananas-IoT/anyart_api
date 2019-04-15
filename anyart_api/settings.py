@@ -16,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost', '35.234.78.240', '192.168.99.101']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '35.234.78.240', '192.168.99.101']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -80,10 +80,10 @@ WSGI_APPLICATION = 'anyart_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'anyart_db',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
