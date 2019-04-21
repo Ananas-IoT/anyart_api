@@ -7,12 +7,17 @@ import copy
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from authorization.serializers import RegisterUserSerializer, MyTokenObtainPairSerializer, ReadOnlyUserSerializer
+from authorization.serializers import RegisterUserSerializer, \
+                                        MyTokenObtainPairSerializer, \
+                                        ReadOnlyUserSerializer, \
+                                        FeedbackSerializer
 from authorization.tokens import account_activation_token, password_activation_token
+from authorization.models import Feedback
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
-import pdb
+from rest_framework import viewsets
+
 
 class UserCreateView(generics.CreateAPIView):
     """Handles creating Users."""
@@ -30,6 +35,29 @@ class UserCreateView(generics.CreateAPIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class FeedbackViewSet(viewsets.ModelViewSet): 
+    serializer_class = FeedbackSerializer
+    queryset = Feedback.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            owner = request.user.id
+            description = request.data['description']
+        except AttributeError or KeyError:
+            return Response('These fields are necessary: owner, description', 
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data={
+            'owner': owner,
+            'description': description
+        })
+        # import pdb; pdb.set_trace()
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(http_method_names=['GET'])
@@ -87,7 +115,6 @@ def verify_reset_code(request, *args, **kwargs):
     allowed_change = account_activation_token.check_token(user, reset_code)
     if allowed_change:
         token = password_activation_token.make_token(user)
-        # pdb.set_trace()
         return Response({'password_token': token}, status=status.HTTP_200_OK)
     return Response("Not allowed to change password", status=status.HTTP_400_BAD_REQUEST)
 

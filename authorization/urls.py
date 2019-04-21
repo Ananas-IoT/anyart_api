@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 from . import views
+from anyart_api.urls import list_dict
 
 urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -11,5 +12,6 @@ urlpatterns = [
          views.verify_email, name='verify_email'), 
     path('forgot_password/', views.forgot_password, name='forgot_password'),
     path('verify_reset_code/', views.verify_reset_code, name='verify_reset_code'),
-    path('change_password/', views.change_password, name='chnage_password')
+    path('change_password/', views.change_password, name='chnage_password'),
+    path('feedback/', views.FeedbackViewSet.as_view(list_dict), name='feedback')
 ]

@@ -13,7 +13,8 @@ from authorization.models import (
     UserProfile,
     BasicUserProfile,
     ArtistUserProfile,
-    GovernmentUserProfile)
+    GovernmentUserProfile, 
+    Feedback)
 from authorization.tokens import account_activation_token
 
 
@@ -175,6 +176,29 @@ class ReadOnlyUserSerializer(UserModelSerializer):
         fields = ('id', 'username', 'first_name', 'last_name', 'email', 'rights')
         extra_kwargs = {'password': {'write_only': True}}
 
+
+class FeedbackSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Feedback
+        fields = '__all__'
+
+    def create(self, validated_data):
+        feedback = Feedback.objects.create(**validated_data)
+        send_feedback_email(feedback)
+        return feedback    
+
+
+def send_feedback_email(feedback):
+    """Composes and sends feedback to anyart email"""
+    mail_subject = f'Feedback #{feedback.id}'
+    message = render_to_string('feedback_email.html', {
+        'feedback': feedback,
+        'owner': feedback.owner
+    })
+    to_mails = ['anyart.iot@gmail.com', 'nsblnr@gmail.com'] # todo complete mails
+    email = EmailMessage(mail_subject, message, to=to_mails)
+    email.send()
 
 def send_verification_email(user, request):
     """Composes and sends email with verification token to selected email"""

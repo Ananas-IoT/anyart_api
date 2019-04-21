@@ -70,6 +70,7 @@ class ArtistUserProfile(UserProfile):
     owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=False, null=False,
                                  related_name='artist_user_profile')
 
-#
-# class GroupContact(models.Model):
-#     group = models.ForeignKey('auth.Group', )
+
+class Feedback(models.Model):
+    owner = models.ForeignKey('authorization.User', on_delete=models.CASCADE)
+    description = models.TextField()

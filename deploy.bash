@@ -8,12 +8,12 @@ apt update && apt -y upgrade && apt install -y
                                     libssl-dev \
                                     libffi-dev \
                                     python3-dev \
-                                    virtualenv \ 
-                                    ; #mysql-server
+                                    virtualenv;
 sed -i 's/DEBUG = True/DEBUG = False/' ~/projects/anyart_api/anyart_api/settings.py;
 virtualenv -p /usr/bin/python3 ~/projects/anyart_api/venv;
 source ~/projects/anyart_api/venv/bin/activate;
 pip install -r requirements.txt;
+python reload.py;
 
 
 # mkdir /app;
