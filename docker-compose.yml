@@ -1,0 +1,16 @@
+version: "2"
+services:
+  anyart_api:
+    build: .
+    links:
+      - db
+    ports:
+      - "80:80"
+  anyart_db:
+    image: mysql:5.7
+    # ports:
+    #   - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro

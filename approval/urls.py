@@ -5,15 +5,15 @@ from rest_framework import routers
 from workload.views import WorkloadViewSet, SketchViewSet, WallPhotoWrapperViewSet
 
 router = routers.SimpleRouter()
-router.register('workloads', WorkloadViewSet, basename='workload')
+router.register('workloads', WorkloadViewSet, basename='aworkload')
 router.register('sketches', SketchViewSet, basename='sketch')
 router.register('wall_photo_wrappers', WallPhotoWrapperViewSet, basename='wall_photo_wrapper')
 router.register('wall_photo_wrapper_decisions', WallPhotoWrapperDecisionViewSet,
                 basename='wall_photo_wrapper_decision')
 router.register('sketch_decisions', SketchDecisionViewSet, basename='sketch_decision')
 
-workload_router = NestedSimpleRouter(router, 'workloads', lookup='workload')
-workload_router.register('sketches', SketchViewSet, basename='workload-sketch')
+workload_router = NestedSimpleRouter(router, 'workloads', lookup='aworkload')
+workload_router.register('sketches', SketchViewSet, basename='aworkload-sketch')
 workload_router.register('wall_photo_wrappers', WallPhotoWrapperViewSet, basename='wall_photo_wrapper')
 
 sketch_router = NestedSimpleRouter(workload_router, 'sketches', lookup='sketch')
