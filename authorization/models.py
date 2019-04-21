@@ -72,5 +72,6 @@ class ArtistUserProfile(UserProfile):
 
 
 class Feedback(models.Model):
-    owner = models.ForeignKey('authorization.User', on_delete=models.CASCADE)
-    description = models.TextField()
+    owner = models.ForeignKey('authorization.User', on_delete=models.CASCADE, null=True, blank=True)
+    contact = models.CharField(max_length=200, null=True, blank=True)
+    body = models.TextField()

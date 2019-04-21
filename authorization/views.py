@@ -40,20 +40,27 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class FeedbackViewSet(viewsets.ModelViewSet): 
     serializer_class = FeedbackSerializer
     queryset = Feedback.objects.all()
+    authentication_classes = ()
 
     def create(self, request, *args, **kwargs):
         try:
-            owner = request.user.id
-            description = request.data['description']
-        except AttributeError or KeyError:
-            return Response('These fields are necessary: owner, description', 
+            # owner is not required
+            try:
+                owner = request.user.id
+            except AttributeError:
+                owner = None
+            # contact is not reqired
+            contact = request.data.get('contact', None)
+            description = request.data['body']
+        except KeyError:
+            return Response('These fields are necessary: body', 
                             status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data={
             'owner': owner,
-            'description': description
+            'body': description,
+            'contact': contact
         })
-        # import pdb; pdb.set_trace()
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

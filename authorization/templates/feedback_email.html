@@ -1,5 +1,5 @@
 {% autoescape off %}
 Feedback notification!
-User {{owner.username}}, email: {{owner.email}} submitted his/her feedback:
-{{feedback.description}}
+User {{owner.username|default:"N/A"}}, email: {{owner.email|default:"N/A"}} submitted his/her feedback:
+{{feedback.body}}
 {% endautoescape %}
