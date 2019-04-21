@@ -14,7 +14,8 @@ virtualenv -p /usr/bin/python3 ~/projects/anyart_api/venv;
 source ~/projects/anyart_api/venv/bin/activate;
 pip install -r requirements.txt;
 python reload.py;
-
+cp 000-default /etc/apache2/sites-available/000-default.conf 
+cp default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 
 # mkdir /app;
 # cat /etc/apache2/apache2.conf | grep error.log;
