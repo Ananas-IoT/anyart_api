@@ -3,7 +3,7 @@ services:
   anyart_api:
     build: .
     links:
-      - db
+      - anyart_db
     ports:
       - "80:80"
   anyart_db:
