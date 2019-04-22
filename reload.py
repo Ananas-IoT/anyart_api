@@ -9,9 +9,9 @@ for remove_dir in remove_dirs:
     shutil.rmtree(remove_dir, ignore_errors=True)
 
 # recreate db
-my_SQL_connection = mysql.connector.connect(host='localhost',
+my_SQL_connection = mysql.connector.connect(host='35.234.121.82',
                                             user='anyart',
-                                            database='anyart_db',
+                                            database='anyart-db',
                                             password='admin')
 sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
 cursor = my_SQL_connection.cursor()
