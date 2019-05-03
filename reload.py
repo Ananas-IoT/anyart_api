@@ -27,6 +27,7 @@ DB_USER = env(env_dict['DATABASE_USER'])
 DB_NAME = env(env_dict['DATABASE_NAME'])
 DB_PASSWORD = env(env_dict['DATABASE_PASSWORD'])
 
+
 # removing existing migration files
 remove_dirs = ['authorization/migrations', 'workload/migrations', 'approval/migrations']
 for remove_dir in remove_dirs:
@@ -37,7 +38,7 @@ my_SQL_connection = mysql.connector.connect(host=DB_HOST,
                                             user=DB_USER,
                                             database=DB_NAME,
                                             password=DB_PASSWORD)
-sql_query = 'DROP DATABASE IF EXISTS anyart_db; CREATE DATABASE anyart_db;'
+sql_query = f'DROP DATABASE IF EXISTS {DB_NAME}; CREATE DATABASE {DB_NAME};'
 cursor = my_SQL_connection.cursor()
 cursor.execute(sql_query)
 cursor.close()
