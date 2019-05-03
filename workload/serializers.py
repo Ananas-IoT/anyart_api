@@ -2,10 +2,14 @@ from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
 from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
-
+from authorization.serializers import ReadOnlyUserSerializer
 from approval.models import WallPhotoWrapperDecision, SketchDecision
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
+
+class OwnerSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField()
 
 class WorkloadSerializer(serializers.Serializer):
     lng = serializers.FloatField(required=True, write_only=True)
@@ -107,6 +111,8 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(write_only=True)
     workload_id = serializers.PrimaryKeyRelatedField(queryset=Workload.objects.all(), source='Workload', required=False)
     created_at = serializers.DateTimeField(read_only=True)
+    owner = OwnerSerializer(read_only=True)
+
 
     # location
     lng = serializers.FloatField(required=True, write_only=True)
@@ -160,6 +166,7 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
 class SketchSerializer(serializers.ModelSerializer):
     workload = serializers.PrimaryKeyRelatedField(queryset=Workload.objects.all(),
                                                   source='workload.Workload', required=False)
+    owner = OwnerSerializer(read_only=True)
     workload_id = serializers.IntegerField(write_only=True, required=False)
     user_id = serializers.CharField(write_only=True, required=False)
     sketch_images = serializers.SerializerMethodField()

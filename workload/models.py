@@ -36,6 +36,7 @@ class Sketch(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
     sketch_description = models.TextField(blank=True, null=False, default='Not provided')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         verbose_name_plural = "sketches"

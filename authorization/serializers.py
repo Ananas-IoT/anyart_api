@@ -168,7 +168,7 @@ class MyTokenObtainPairSerializer(UserModelSerializer, TokenObtainPairSerializer
 class ReadOnlyUserSerializer(UserModelSerializer):
     def __init__(self, *args, **kwargs):
         super(ReadOnlyUserSerializer, self).__init__(*args, **kwargs)
-
+        
         self.fields['user_profile'] = self.user_profile_serializer(many=False, read_only=True)
 
     class Meta:

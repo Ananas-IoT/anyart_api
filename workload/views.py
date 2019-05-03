@@ -89,10 +89,15 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
         return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
-        if self.kwargs.get('workload_pk') and self.kwargs.get('pk'):
-            return WallPhotoWrapper.objects.filter(id=self.kwargs.get('pk', None), workload=self.kwargs.get('workload_pk', None))                         
-        elif self.kwargs.get('workload_pk'):
-            return WallPhotoWrapper.objects.filter(workload=self.kwargs.get('workload_pk', None))
+        params = {
+            'workload': self.kwargs.get('workload_pk', None),
+            'id': self.kwargs.get('pk', None),
+        }
+        filtered_params = {key: value for key, value in params.items() if value is not None}
+        if self.request.query_params.get('my') == '1':
+            filtered_params['owner'] = self.request.user
+        if filtered_params:
+            return WallPhotoWrapper.objects.filter(**filtered_params)
         return WallPhotoWrapper.objects.all()
 
     def destroy(self, request, pk=None, *args, **kwargs):
@@ -112,7 +117,7 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
 
 class SketchViewSet(viewsets.ModelViewSet):
     queryset = Sketch.objects.all()
-    serializer_class = SketchSerializer
+    serializer_class = SketchSerializer        
 
     def create(self, request, *args, **kwargs):
         ser_data = copy.deepcopy(request.data)
@@ -150,8 +155,15 @@ class SketchViewSet(viewsets.ModelViewSet):
         return Response({'serializer': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
-        if self.kwargs.get('workload_pk'):
-            return Sketch.objects.filter(id=self.kwargs.get('pk', None), workload=self.kwargs.get('workload_pk', None))
+        params = {
+            'workload': self.kwargs.get('workload_pk', None),
+            'id': self.kwargs.get('pk', None),
+        }
+        filtered_params = {key: value for key, value in params.items() if value is not None}
+        if self.request.query_params.get('my') == '1':
+            filtered_params['owner'] = self.request.user
+        if filtered_params:
+            return Sketch.objects.filter(**filtered_params)
         return Sketch.objects.all()
 
     
