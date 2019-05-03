@@ -106,6 +106,7 @@ class WallPhotoWrapperLocationSerializer(serializers.Serializer):
 class WallPhotoWrapperSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(write_only=True)
     workload_id = serializers.PrimaryKeyRelatedField(queryset=Workload.objects.all(), source='Workload', required=False)
+    created_at = serializers.DateTimeField(read_only=True)
 
     # location
     lng = serializers.FloatField(required=True, write_only=True)

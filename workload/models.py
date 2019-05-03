@@ -61,6 +61,7 @@ class WallPhotoWrapper(models.Model):
     location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrapper',
                                     blank=False, null=False)
     description = models.TextField(blank=True, null=False, default='Not provided')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return '%s:%s' % (self.owner, self.description[:50])
