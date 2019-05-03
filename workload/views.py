@@ -90,10 +90,10 @@ class WallPhotoWrapperViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.kwargs.get('workload_pk') and self.kwargs.get('pk'):
-            return Sketch.objects.filter(id=self.kwargs.get('pk', None), workload=self.kwargs.get('workload_pk', None))                         
+            return WallPhotoWrapper.objects.filter(id=self.kwargs.get('pk', None), workload=self.kwargs.get('workload_pk', None))                         
         elif self.kwargs.get('workload_pk'):
-            return Sketch.objects.filter(workload=self.kwargs.get('workload_pk', None))
-        return Sketch.objects.all()
+            return WallPhotoWrapper.objects.filter(workload=self.kwargs.get('workload_pk', None))
+        return WallPhotoWrapper.objects.all()
 
     def destroy(self, request, pk=None, *args, **kwargs):
         # import pdb; pdb.set_trace()
