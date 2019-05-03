@@ -14,6 +14,7 @@ class SketchVoteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
 class SketchDecisionSerializer(serializers.ModelSerializer):
     sketch = SketchSerializer(read_only=True)
     owner_pk = serializers.IntegerField(write_only=True)
