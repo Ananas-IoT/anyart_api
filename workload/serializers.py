@@ -3,7 +3,7 @@ from django.db import transaction, IntegrityError
 from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from authorization.serializers import ReadOnlyUserSerializer
-from approval.models import WallPhotoWrapperDecision, SketchDecision
+from approval.models import WallPhotoWrapperDecision, SketchDecision, SketchVote
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
 
@@ -171,10 +171,18 @@ class SketchSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(write_only=True, required=False)
     sketch_images = serializers.SerializerMethodField()
     sketch_votes = serializers.SerializerMethodField(read_only=True)
+    vote_id = serializers.SerializerMethodField(read_only=True)
     images = serializers.ListField(child=serializers.ImageField(
         allow_empty_file=False,
         use_url=False
     ), required=True, write_only=True)
+
+    def get_vote_id(self, obj):
+        try:
+            return obj.sketch_votes.filter(owner_id=self.context.get('request').user.id, sketch_id=obj.id, vote=1)\
+                .get().id
+        except SketchVote.DoesNotExist:
+            return 0
 
     def get_sketch_votes(self, obj):
         return obj.sketch_votes.filter(vote=1).count()

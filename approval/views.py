@@ -2,11 +2,12 @@ from django.contrib.auth.decorators import permission_required
 from rest_framework import viewsets, status
 import copy
 
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from approval.models import SketchVote, SketchDecision, WallPhotoWrapperDecision
 from approval.serializers import SketchVoteSerializer, SketchDecisionSerializer, WallPhotoWrapperDecisionSerializer
-from authorization.permissions import retrieve_payload
+from authorization.permissions import retrieve_payload, IsOwner
 
 
 class SketchVoteViewSet(viewsets.ModelViewSet):
@@ -53,6 +54,13 @@ class SketchVoteViewSet(viewsets.ModelViewSet):
             self.perform_update(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            permission_classes = [IsOwner]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         return SketchVote.objects.filter(sketch=self.kwargs.pop('sketch_pk', None)) or \
