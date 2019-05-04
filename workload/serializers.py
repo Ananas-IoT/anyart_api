@@ -19,7 +19,7 @@ class WorkloadSerializer(serializers.Serializer):
     images = serializers.ListField(child=serializers.ImageField(
         allow_empty_file=False,
         use_url=False
-    ), required=True, write_only=True)
+    ),  required=True, write_only=True)
 
     self = serializers.HyperlinkedIdentityField(view_name='workload-detail')
     wall_photo_wrapper = NestedHyperlinkedRelatedField(

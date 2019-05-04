@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.utils.datetime_safe import datetime
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from approval.models import SketchVote, SketchDecision, WallPhotoWrapperDecision
 from workload.serializers import SketchSerializer, WallPhotoWrapperSerializer
@@ -12,6 +13,12 @@ class SketchVoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = SketchVote
         fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=SketchVote.objects.all(),
+                fields=('owner', 'sketch')
+            )
+        ]
 
 
 
