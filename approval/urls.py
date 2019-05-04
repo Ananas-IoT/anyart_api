@@ -12,6 +12,9 @@ router.register('wall_photo_wrapper_decisions', WallPhotoWrapperDecisionViewSet,
                 basename='wall_photo_wrapper_decision')
 router.register('sketch_decisions', SketchDecisionViewSet, basename='sketch_decision')
 
+sketch_base_router = NestedSimpleRouter(router, 'sketches', lookup='sketch')
+sketch_base_router.register('votes', SketchVoteViewSet, basename='sketch_base_vote')
+
 workload_router = NestedSimpleRouter(router, 'workloads', lookup='aworkload')
 workload_router.register('sketches', SketchViewSet, basename='aworkload-sketch')
 workload_router.register('wall_photo_wrappers', WallPhotoWrapperViewSet, basename='wall_photo_wrapper')
@@ -27,5 +30,6 @@ wall_photo_wrapper_router.register('wall_photo_wrapper_decisions', WallPhotoWrap
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(sketch_router.urls)),
-    path('', include(wall_photo_wrapper_router.urls))
+    path('', include(wall_photo_wrapper_router.urls)),
+    path('', include(sketch_base_router.urls)),
 ]
