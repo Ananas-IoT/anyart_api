@@ -69,7 +69,8 @@ class SketchVote(models.Model):
         (LIKE, 'Like'),
         (DISLIKE, 'Dislike')
     ]
-    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False)
+    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
+                               related_name='sketch_votes')
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
     vote = models.IntegerField(choices=user_vote_choices, blank=False, null=False)
     created_at = models.DateTimeField(auto_now=True)

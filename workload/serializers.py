@@ -170,10 +170,14 @@ class SketchSerializer(serializers.ModelSerializer):
     workload_id = serializers.IntegerField(write_only=True, required=False)
     user_id = serializers.CharField(write_only=True, required=False)
     sketch_images = serializers.SerializerMethodField()
+    sketch_votes = serializers.SerializerMethodField(read_only=True)
     images = serializers.ListField(child=serializers.ImageField(
         allow_empty_file=False,
         use_url=False
     ), required=True, write_only=True)
+
+    def get_sketch_votes(self, obj):
+        return obj.sketch_votes.filter(vote=1).count()
 
     def get_sketch_images(self, instance):
         images = []
