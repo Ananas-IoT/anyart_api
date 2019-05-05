@@ -2,6 +2,8 @@ from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
 from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
+
+from authorization.permissions import retrieve_payload
 from authorization.serializers import ReadOnlyUserSerializer
 from approval.models import WallPhotoWrapperDecision, SketchDecision, SketchVote
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
@@ -179,7 +181,8 @@ class SketchSerializer(serializers.ModelSerializer):
 
     def get_vote_id(self, obj):
         try:
-            return obj.sketch_votes.filter(owner_id=self.context.get('request').user.id, sketch_id=obj.id, vote=1)\
+            return obj.sketch_votes.filter(owner_id=retrieve_payload(self.context.get('request'))['user_id'],
+                                           sketch_id=obj.id, vote=1)\
                 .get().id
         except SketchVote.DoesNotExist:
             return 0
