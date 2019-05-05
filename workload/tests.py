@@ -32,7 +32,7 @@ class MainWorkloadTest(APITestCase):
             'lat': 875.12,
             'description': 'wucyfwe'
         }
-        with open(r'C:\Users\gursk\projects\anyart_api\ananas.jpg', 'rb') as fp:
+        with open(r'/home/gurman/projects/anyart_api/ananas.jpg', 'rb') as fp:
             data['photo'] = fp
             workload_response = self.client.post(url, data)
         return workload_response
@@ -81,7 +81,7 @@ class MainWorkloadTest(APITestCase):
         data = {
             'comment': 'This is my first sketch'
         }
-        with open(r'C:\Users\gursk\projects\anyart_api\ananas.jpg', 'rb') as fp:
+        with open(r'/home/gurman/projects/anyart_api/ananas.jpg', 'rb') as fp:
             data['sketch'] = fp
             sketch_response = self.client.post(url, data)
         self.assertEqual(sketch_response.status_code, status.HTTP_201_CREATED)

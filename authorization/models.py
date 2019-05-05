@@ -39,11 +39,11 @@ class BasicUserProfile(UserProfile):
 
 
 class GovernmentUserProfile(UserProfile):
-    CULTURE_MANAGEMENT = 'Culture Management'
-    TOURISM_MANAGEMENT = 'Tourism Management'
-    IT_MANAGEMENT = 'IT management'
-    HISTORY_PRESERVATION_MANAGEMENT = 'History Preservation Management'
-    MAIN_ARCHITECT = 'Main Architect'
+    CULTURE_MANAGEMENT = 'culture_management'
+    TOURISM_MANAGEMENT = 'tourism_management'
+    IT_MANAGEMENT = 'it_management'
+    HISTORY_PRESERVATION_MANAGEMENT = 'history_preservation_management'
+    MAIN_ARCHITECT = 'main_architect'
 
     authority_choices = [
         (CULTURE_MANAGEMENT, 'Culture Management'),
@@ -71,3 +71,7 @@ class ArtistUserProfile(UserProfile):
                                  related_name='artist_user_profile')
 
 
+class Feedback(models.Model):
+    owner = models.ForeignKey('authorization.User', on_delete=models.CASCADE, null=True, blank=True)
+    contact = models.CharField(max_length=200, null=True, blank=True)
+    body = models.TextField()
