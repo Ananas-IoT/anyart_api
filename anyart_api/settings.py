@@ -10,17 +10,33 @@ env = environ.Env()
 environ.Env.read_env()
 
 
-SECRET_KEY = env('SECRET_KEY')
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEV = True
 
-ALLOWED_HOSTS = ['anyart.pythonanywhere.com', '127.0.0.1', 'localhost']
+env_dict = { 
+    'DATABASE_PASSWORD': 'DATABASE_PASSWORD', 
+    'DATABASE_USER': 'DATABASE_USER', 
+    'DATABASE_HOST': 'DATABASE_HOST', 
+    'DATABASE_NAME': 'DATABASE_NAME'
+}
+
+if DEV:
+    for key, value in env_dict.items():
+        env_dict[key] = f'DEV_{value}'
+
+SECRET_KEY = env('SECRET_KEY')
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '35.234.78.240', '192.168.99.101', 'anyart.pythonanywhere.com']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
 AUTH_USER_MODEL = 'authorization.User'
+
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'fixtures'),
+]
 
 # Application definition
 
@@ -76,10 +92,10 @@ WSGI_APPLICATION = 'anyart_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'anyart_db',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'NAME': env(env_dict['DATABASE_NAME']),
+        'USER': env(env_dict['DATABASE_USER']),
+        'PASSWORD': env(env_dict['DATABASE_PASSWORD']),
+        'HOST': env(env_dict['DATABASE_HOST']),
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -119,7 +135,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
 }
 
 # Internationalization

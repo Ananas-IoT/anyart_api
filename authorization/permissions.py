@@ -1,4 +1,4 @@
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 import re
 import ast
 import base64 as b
@@ -7,7 +7,10 @@ import base64 as b
 def retrieve_payload(request):
     token_str = request.META['HTTP_AUTHORIZATION']
     regex = re.compile('\..*\.')
-    payload = regex.findall(token_str)[0]
+    try:
+        payload = regex.findall(token_str)[0]
+    except IndexError:
+        raise serializers.ValidationError('Cannot retrieve payload')
     payload = payload[1:-1]
 
     missing_data = len(payload) % 4
@@ -45,10 +48,14 @@ class IsGov(permissions.BasePermission):
 
 
 class IsOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user:
+            return True
+
     def has_object_permission(self, request, view, obj):
         try:
             payload = retrieve_payload(request)
-            return payload['user_id'] == obj.owner
+            return payload['user_id'] == obj.owner.id
         except KeyError:
             return False
 

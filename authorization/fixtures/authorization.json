@@ -1,0 +1,189 @@
+[
+{ 
+  "model": "authorization.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$MnNDkqh50F4E$ADVCcKKdzwL1UZvHFmvjiVqz8hELCfnOju7pe+7rjek=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "betalab99",
+    "first_name": "Vasyl",
+    "last_name": "Rybak",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:21:33.339Z",
+    "email": "qwerty@gmail.com",
+    "rights": "basic",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$h5dtfjmt9Psn$UJKdXUr5JvUuLnxe1B9dQ/20fSuoSGuUaFiS6qIQjeE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "tarasart",
+    "first_name": "Taras",
+    "last_name": "Art",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:22:17.586Z",
+    "email": "asdfgh@gmail.com",
+    "rights": "artist",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$ar5RNRljmV3d$rfQiIRQpnQV/0vp8fa1mcz+JGMVlc015KtDr2Pq5Vhs=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "rostyk_vas",
+    "first_name": "Rostyslav",
+    "last_name": "Vasyuta",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:27:42.636Z",
+    "email": "zxcvbn@gmail.com",
+    "rights": "gov",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$AvS8WqYmqpfx$xydusqSJJUgIILc8x5nF8UgB7k8pfbyPm6q9f3PaT+Q=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "moskalenko_andriy",
+    "first_name": "Andriy",
+    "last_name": "Moskalenko",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:29:13.120Z",
+    "email": "yuiop@gmail.com",
+    "rights": "gov",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$6WO772lre401$W+gHo5cySoe0aiHdj+5eghHya8TV6De+Egs8ZQVRyx0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "onyshchenko",
+    "first_name": "Liliya",
+    "last_name": "Onyshchenko",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:31:54.795Z",
+    "email": "lkjhg@gmail.com",
+    "rights": "gov",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$mW0nczPMnfTR$vKFN8KFlNRXr/57oNWlo3xKt0tScHbbMreIin6+Tr0o=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "bunda_nataliya",
+    "first_name": "Nataliya",
+    "last_name": "Bunda",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:34:34.019Z",
+    "email": "mnbvc@gmail.com",
+    "rights": "gov",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$120000$MQeM1824bzij$0mI1lbNdlS8eVjVT4935e7XNEjbPCOJMvMUSVED/sgk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ostapchuk_lina",
+    "first_name": "Lina",
+    "last_name": "Ostapchuk",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2019-03-27T09:36:44.688Z",
+    "email": "rgnmj@gmail.com",
+    "rights": "gov",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authorization.basicuserprofile",
+  "pk": 1,
+  "fields": {
+    "owner": 1
+  }
+},
+{
+  "model": "authorization.governmentuserprofile",
+  "pk": 1,
+  "fields": {
+    "authority": "IT management",
+    "owner": 5
+  }
+},
+{
+  "model": "authorization.governmentuserprofile",
+  "pk": 2,
+  "fields": {
+    "authority": "Main Architect",
+    "owner": 6
+  }
+},
+{
+  "model": "authorization.governmentuserprofile",
+  "pk": 3,
+  "fields": {
+    "authority": "History Preservation Management",
+    "owner": 7
+  }
+},
+{
+  "model": "authorization.governmentuserprofile",
+  "pk": 4,
+  "fields": {
+    "authority": "Culture Management",
+    "owner": 8
+  }
+},
+{
+  "model": "authorization.governmentuserprofile",
+  "pk": 5,
+  "fields": {
+    "authority": "Tourism Management",
+    "owner": 9
+  }
+},
+{
+  "model": "authorization.artistuserprofile",
+  "pk": 1,
+  "fields": {
+    "owner": 2
+  }
+}
+]

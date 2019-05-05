@@ -1,9 +1,11 @@
 import boto3
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 from django.dispatch import receiver
 from anyart_api import settings
 from anyart_api import storage_backends as sb
+from approval.models import WallPhotoWrapperDecision
 
 
 class Workload(models.Model):
@@ -34,6 +36,7 @@ class Sketch(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=False)
     workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE, blank=False, null=False)
     sketch_description = models.TextField(blank=True, null=False, default='Not provided')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         verbose_name_plural = "sketches"
@@ -55,10 +58,11 @@ class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='photo_wrappers',
                               blank=True, null=False)
     workload = models.OneToOneField('workload.Workload', on_delete=models.CASCADE, related_name='wall_photo_wrapper',
-                                 blank=False, null=False)
+                                    blank=False, null=False)
     location = models.OneToOneField('workload.Location', on_delete=models.CASCADE, related_name='photo_wrapper',
-                                 blank=False, null=False)
+                                    blank=False, null=False)
     description = models.TextField(blank=True, null=False, default='Not provided')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return '%s:%s' % (self.owner, self.description[:50])
@@ -69,7 +73,7 @@ class Restriction(models.Model):
     location = models.ForeignKey('workload.Location', on_delete=models.CASCADE, blank=False, null=False)
 
 
-"""------------------------------------------------------FILES-------------------------------------------------------"""
+"""---------------------------------------------------FILES------------------------------------------------------"""
 
 
 class AbstractFile(models.Model):
@@ -115,7 +119,7 @@ class SketchImage(AbstractFile):
     def delete_static_on_delete(sender, instance, using, **kwargs):
         s3 = boto3.resource('s3')
         s3.Object(f'{settings.AWS_STORAGE_BUCKET_NAME}',
-                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.photo))).delete()
+                  '%s/%s' % (settings.AWS_PUBLIC_MEDIA_LOCATION, str(instance.image))).delete()
 
     # @receiver(models.signals.pre_save, sender='workload.SketchImage')
     # def delete_static_on_change(sender, instance, using, **kwargs):

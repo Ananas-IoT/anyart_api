@@ -1,0 +1,203 @@
+[
+{
+  "model": "workload.workload",
+  "pk": 1,
+  "fields": {
+    "created_at": "2019-03-27T09:47:46.403Z",
+    "status": 1,
+    "requirements": null
+  }
+},
+{
+  "model": "workload.workload",
+  "pk": 2,
+  "fields": {
+    "created_at": "2019-03-27T09:48:45.988Z",
+    "status": 1,
+    "requirements": null
+  }
+},
+{
+  "model": "workload.workload",
+  "pk": 3,
+  "fields": {
+    "created_at": "2019-03-27T09:49:30.897Z",
+    "status": 1,
+    "requirements": null
+  }
+},
+{
+  "model": "workload.sketch",
+  "pk": 1,
+  "fields": {
+    "owner": 2,
+    "workload": 3,
+    "sketch_description": "i can do this... probably"
+  }
+},
+{
+  "model": "workload.sketch",
+  "pk": 2,
+  "fields": {
+    "owner": 2,
+    "workload": 3,
+    "sketch_description": "and even this"
+  }
+},
+{
+  "model": "workload.sketch",
+  "pk": 3,
+  "fields": {
+    "owner": 2,
+    "workload": 2,
+    "sketch_description": "why not"
+  }
+},
+{
+  "model": "workload.sketch",
+  "pk": 4,
+  "fields": {
+    "owner": 2,
+    "workload": 1,
+    "sketch_description": "cuz I can"
+  }
+},
+{
+  "model": "workload.location",
+  "pk": 1,
+  "fields": {
+    "street_address": "",
+    "lng": 546.65,
+    "lat": 984.54
+  }
+},
+{
+  "model": "workload.location",
+  "pk": 2,
+  "fields": {
+    "street_address": "",
+    "lng": 69.47,
+    "lat": 78.78
+  }
+},
+{
+  "model": "workload.location",
+  "pk": 3,
+  "fields": {
+    "street_address": "",
+    "lng": 25.32,
+    "lat": 58.69
+  }
+},
+{
+  "model": "workload.wallphotowrapper",
+  "pk": 1,
+  "fields": {
+    "owner": 1,
+    "workload": 1,
+    "location": 1,
+    "description": "life is not that bad"
+  }
+},
+{
+  "model": "workload.wallphotowrapper",
+  "pk": 2,
+  "fields": {
+    "owner": 1,
+    "workload": 2,
+    "location": 2,
+    "description": "another workload object with two pics"
+  }
+},
+{
+  "model": "workload.wallphotowrapper",
+  "pk": 3,
+  "fields": {
+    "owner": 1,
+    "workload": 3,
+    "location": 3,
+    "description": "yet another object, just to be sure"
+  }
+},
+{
+  "model": "workload.wallphoto",
+  "pk": 1,
+  "fields": {
+    "created_at": "2019-03-27T09:47:46.533Z",
+    "wrapper": 1,
+    "photo": "wall_photos/grey_OG1MvKY.jpg"
+  }
+},
+{
+  "model": "workload.wallphoto",
+  "pk": 2,
+  "fields": {
+    "created_at": "2019-03-27T09:48:46.092Z",
+    "wrapper": 2,
+    "photo": "wall_photos/grey_PHnmCQW.jpg"
+  }
+},
+{
+  "model": "workload.wallphoto",
+  "pk": 3,
+  "fields": {
+    "created_at": "2019-03-27T09:48:46.444Z",
+    "wrapper": 2,
+    "photo": "wall_photos/tuly.jpg"
+  }
+},
+{
+  "model": "workload.wallphoto",
+  "pk": 4,
+  "fields": {
+    "created_at": "2019-03-27T09:49:30.996Z",
+    "wrapper": 3,
+    "photo": "wall_photos/grey_xRA00U3.jpg"
+  }
+},
+{
+  "model": "workload.wallphoto",
+  "pk": 5,
+  "fields": {
+    "created_at": "2019-03-27T09:49:31.314Z",
+    "wrapper": 3,
+    "photo": "wall_photos/tuly_1ZYuJQK.jpg"
+  }
+},
+{
+  "model": "workload.sketchimage",
+  "pk": 1,
+  "fields": {
+    "created_at": "2019-03-27T09:54:38.001Z",
+    "sketch": 1,
+    "image": "sketches/download_XmnmkVf.png"
+  }
+},
+{
+  "model": "workload.sketchimage",
+  "pk": 2,
+  "fields": {
+    "created_at": "2019-03-27T09:55:07.362Z",
+    "sketch": 2,
+    "image": "sketches/download_l1SjAtK.png"
+  }
+},
+{
+  "model": "workload.sketchimage",
+  "pk": 3,
+  "fields": {
+    "created_at": "2019-03-27T09:55:20.292Z",
+    "sketch": 3,
+    "image": "sketches/download_miUsTxF.png"
+  }
+},
+{
+  "model": "workload.sketchimage",
+  "pk": 4,
+  "fields": {
+    "created_at": "2019-03-27T09:56:12.643Z",
+    "sketch": 4,
+    "image": "sketches/download_cFAXhqC.png"
+  }
+}
+]

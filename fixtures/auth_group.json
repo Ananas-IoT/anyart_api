@@ -1,0 +1,43 @@
+[
+    {
+      "model": "auth.group",
+      "pk": 1,
+      "fields": {
+        "name": "tourism_management",
+        "permissions": []
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 2,
+      "fields": {
+        "name": "it_management",
+        "permissions": []
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 3,
+      "fields": {
+        "name": "history_preservation_management",
+        "permissions": []
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 4,
+      "fields": {
+        "name": "main_architect",
+        "permissions": []
+      }
+    },
+    {
+      "model": "auth.group",
+      "pk": 5,
+      "fields": {
+        "name": "art_expert",
+        "permissions": []
+      }
+    }
+    ]
+    
