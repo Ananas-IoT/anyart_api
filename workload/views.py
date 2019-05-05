@@ -173,24 +173,24 @@ class WallPhotoViewSet(viewsets.ModelViewSet):
     serializer_class = WallPhotoSerializer
 
     def create(self, request, wall_photo_wrapper_pk=None, *args, **kwargs):
-        ser_data = copy.deepcopy(request.data)
+        # ser_data = copy.deepcopy(request.data)
         # User Id retrieval
         try:
             user_id = retrieve_payload(request)['user_id']
         except KeyError:
             return Response('Either token is invalid or not present', status=status.HTTP_401_UNAUTHORIZED)
-        ser_data['user_id'] = user_id
+        request.data['user_id'] = user_id
 
         # Lookup fields & foreign keys
         # if data contains no wall_photo_wrapper_pk, fetch it from url
         try:
-            if not ser_data.get('wall_photo_wrapper_id'):
-                ser_data['wrapper'] = wall_photo_wrapper_pk
+            if not request.data.get('wall_photo_wrapper_id'):
+                request.data['wrapper'] = wall_photo_wrapper_pk
         except KeyError:
             return Response('Unable to retrieve wall_photo_wrapper_pk_id', status=status.HTTP_400_BAD_REQUEST)
 
         # Serializer
-        serializer = self.get_serializer(data=ser_data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -206,18 +206,18 @@ class SketchImageViewSet(viewsets.ModelViewSet):
     serializer_class = SketchImageSerializer
 
     def create(self, request, sketch_pk=None, *args, **kwargs):
-        ser_data = copy.deepcopy(request.data)
+        # ser_data = copy.deepcopy(request.data)
 
         # Lookup fields & foreign keys
         # if data contains no sketch_pk, fetch it from url
         try:
-            if not ser_data.get('sketch_pk'):
-                ser_data['sketch_pk'] = sketch_pk
+            if not request.data.get('sketch_pk'):
+                request.data['sketch_pk'] = sketch_pk
         except KeyError:
             return Response('Unable to retrieve sketch_pk', status=status.HTTP_400_BAD_REQUEST)
 
         # Serializer
-        serializer = self.get_serializer(data=ser_data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response(serializer.data)
