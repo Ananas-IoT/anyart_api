@@ -182,9 +182,8 @@ class SketchSerializer(serializers.ModelSerializer):
     def get_vote_id(self, obj):
         try:
             return obj.sketch_votes.filter(owner_id=retrieve_payload(self.context.get('request'))['user_id'],
-                                           sketch_id=obj.id, vote=1)\
-                .get().id
-        except SketchVote.DoesNotExist:
+                                           sketch_id=obj.id, vote=1).get().id
+        except (SketchVote.DoesNotExist, KeyError) as e:
             return 0
 
     def get_sketch_votes(self, obj):
