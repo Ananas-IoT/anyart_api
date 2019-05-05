@@ -4,7 +4,6 @@ from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from authorization.permissions import retrieve_payload
-from authorization.serializers import ReadOnlyUserSerializer
 from approval.models import WallPhotoWrapperDecision, SketchDecision, SketchVote
 from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
 
@@ -115,7 +114,6 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True)
     owner = OwnerSerializer(read_only=True)
 
-
     # location
     lng = serializers.FloatField(required=True, write_only=True)
     lat = serializers.FloatField(required=True, write_only=True)
@@ -123,12 +121,16 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
     location = WallPhotoWrapperLocationSerializer(read_only=True)
     workload = serializers.HyperlinkedRelatedField(view_name='workload-detail', read_only=True)
     wall_photos = serializers.SerializerMethodField()
+    sketch_count = serializers.SerializerMethodField()
 
     def get_wall_photos(self, instance):
         wall_photos = []
         for wall_photo_model in instance.wall_photos.all():
             wall_photos.append(wall_photo_model.photo.url)
         return wall_photos
+
+    def get_sketch_count(self, obj):
+        return obj.workload.sketch_set.count()
 
     class Meta:
         model = WallPhotoWrapper
