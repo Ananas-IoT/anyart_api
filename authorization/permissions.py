@@ -45,10 +45,14 @@ class IsGov(permissions.BasePermission):
 
 
 class IsOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user:
+            return True
+
     def has_object_permission(self, request, view, obj):
         try:
             payload = retrieve_payload(request)
-            return payload['user_id'] == obj.owner
+            return payload['user_id'] == obj.owner.id
         except KeyError:
             return False
 

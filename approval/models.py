@@ -1,16 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
 
 
-class ApprovalGroup(models.Model):
-    workload = models.ForeignKey('workload.Workload', on_delete=models.CASCADE)
-    approvers = models.ManyToManyField(get_user_model(), related_name='approval_groups')
-
-    def __str__(self):
-        return self.workload.__str__()
-
-
 class GovDecision(models.Model):
+    # vote choices
     DISAPPROVED = 0
     APPROVED = 1
     VETO = 13
@@ -20,37 +14,52 @@ class GovDecision(models.Model):
         (VETO, "Veto")
     ]
 
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    group_role = models.CharField(max_length=100)
-    vote = models.IntegerField(choices=vote_choices)
+    TOURISM_MANAGEMENT = 'tourism_management'
+    IT_MANAGEMENT = 'it_management'
+    HISTORY_PRESERVATION_MANAGEMENT = 'history_preservation_management'
+    MAIN_ARCHITECT = 'main_architect'
+    OWNER = 'owner'
+    ART_EXPERT = 'art_expert'
+    group_role_choices = [
+        (TOURISM_MANAGEMENT, 'Tourism Management'),
+        (IT_MANAGEMENT, 'IT management'),
+        (HISTORY_PRESERVATION_MANAGEMENT, 'History Preservation Management'),
+        (MAIN_ARCHITECT, 'Main Architect'),
+        (OWNER, 'Owner'),
+        (ART_EXPERT, 'Art Expert')
+    ]
 
     class Meta:
         abstract = True
+        permissions = [
+            ('can_veto', 'Can Veto Object')
+        ]
+
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
+    group_role = models.ForeignKey('auth.Group', on_delete=models.CASCADE)
+    vote = models.IntegerField(choices=vote_choices, null=True)
+    voted_at = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        vote_list = [choice[0] for choice in self.vote_choices]
+        vote_list.append(None)
+        if self.vote in vote_list:
+            super().save(*args, **kwargs)
+        else:
+            raise Exception("vote or group_role field is invalid")
 
     def __str__(self):
         return f"{self.owner.__str__()}:{self.group_role}"
 
 
 class SketchDecision(GovDecision):
-    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE)
-
-    def save(self, *args, **kwargs):
-        vote_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
-        if self.vote in vote_list:
-            super(SketchDecision, self).save(*args, **kwargs)
-        else:
-            raise Exception("vote field can only take certain values: 0, 1, 13")
+    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
+                               related_name='decisions')
 
 
 class WallPhotoWrapperDecision(GovDecision):
-    wall_photo_wrapper = models.ForeignKey('workload.WallPhotoWrapper', on_delete=models.CASCADE)
-
-    def save(self, *args, **kwargs):
-        vote_list = [self.BASIC, self.ARTIST, self.GOVERNMENT]
-        if self.vote in vote_list:
-            super(WallPhotoWrapperDecision, self).save(*args, **kwargs)
-        else:
-            raise Exception("vote field can only take certain values: 0, 1, 13")
+    wall_photo_wrapper = models.ForeignKey('workload.WallPhotoWrapper', on_delete=models.CASCADE,
+                                           blank=False, null=False, related_name='decisions')
 
 
 class SketchVote(models.Model):
@@ -60,14 +69,8 @@ class SketchVote(models.Model):
         (LIKE, 'Like'),
         (DISLIKE, 'Dislike')
     ]
-    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False)
+    sketch = models.ForeignKey('workload.Sketch', on_delete=models.CASCADE, blank=False, null=False,
+                               related_name='sketch_votes')
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=False, null=False)
-    vote = models.IntegerField(blank=False, null=False, choices=user_vote_choices)
+    vote = models.IntegerField(choices=user_vote_choices, blank=False, null=False)
     created_at = models.DateTimeField(auto_now=True)
-
-    def save(self, *args, **kwargs):
-        vote_list = [self.LIKE, self.DISLIKE]
-        if self.vote in vote_list:
-            super(SketchVote, self).save(*args, **kwargs)
-        else:
-            raise Exception("vote field can only take certain values: 0, 1")

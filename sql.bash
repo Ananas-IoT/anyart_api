@@ -1,0 +1,1 @@
+mycli -u anyart -h localhost anyart_db
