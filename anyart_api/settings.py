@@ -12,8 +12,8 @@ environ.Env.read_env()
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEV = True
+DEBUG = False
+DEV = False
 
 env_dict = { 
     'DATABASE_PASSWORD': 'DATABASE_PASSWORD', 
