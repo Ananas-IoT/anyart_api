@@ -5,7 +5,7 @@ from rest_framework import serializers, exceptions
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 from authorization.serializers import ReadOnlyUserSerializer
 from approval.models import WallPhotoWrapperDecision, SketchDecision, SketchVote
-from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage
+from workload.models import Location, Workload, WallPhotoWrapper, WallPhoto, Sketch, SketchImage, Limitation
 
 
 class OwnerSerializer(serializers.Serializer):
@@ -14,6 +14,28 @@ class OwnerSerializer(serializers.Serializer):
 
 
 class LocationSerializer(serializers.ModelSerializer):
+    lng = serializers.FloatField(required=True, write_only=True)
+    lat = serializers.FloatField(required=True, write_only=True)
+    street_address = serializers.CharField(required=False, write_only=True, allow_blank=True)
+
+    # self = NestedHyperlinkedRelatedField(
+    #     read_only=True,
+    #     source='*',
+    #     view_name='location-limitations-detail',
+    #     parent_lookup_kwargs={'wall_photo_wrapper_pk': 'photo_wrapper__pk',
+    #                           'workload_pk': 'photo_wrapper__workload__pk',
+    #                           'location_pk': 'limitation__location__pk'
+    #                           }
+    # )
+
+    # limitations = serializers.SerializerMethodField()
+    #
+    # def get_limitations(self, instance):
+    #     limitations = []
+    #     for limitation_model in instance.limitations.all():
+    #         limitations.append(limitation_model)
+    #     return limitations
+
     class Meta:
         model = Location
         fields = '__all__'
@@ -21,14 +43,16 @@ class LocationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         print(validated_data)
         geolocator = Nominatim()
+        # location_id = int(validated_data.pop('location_id', None))
         lng = validated_data.pop('lng', None)
         lat = validated_data.pop('lat', None)
         street_address = validated_data.pop('street_address', None)
+        #owner_id = int(validated_data.pop('user_id', None))
 
         if lat > 0:
             location = geolocator.reverse("{}, {}".format(lng, lat))
             street_address = location.address
-            street_address= street_address.split(', ')[0]+", "+street_address.split(', ')[1]
+            street_address = street_address.split(', ')[0] + ", " + street_address.split(', ')[1]
             print(street_address)
         else:
             location = geolocator.geocode(street_address)
@@ -36,8 +60,22 @@ class LocationSerializer(serializers.ModelSerializer):
             lng = location.longitude
 
         data = {'lat': lat, 'lng': lng, 'street_address': street_address}
+        location = Location.objects.create(**data)
 
-        return data
+        # limitations_serializer = LimitationSerializer(data={'authority_id':10,'reason':'smth','location_id':location._get_pk_val()}, many=True)
+        # print(limitations_serializer.initial_data)
+        #
+        # if limitations_serializer.is_valid():
+        #
+        #     print(1)
+        #     limitations = limitations_serializer.save()
+        #     print(limitations)
+        # else:
+        #     print(limitations_serializer.errors)
+        #     #limitations_data = self.context.get('view').request.FILES
+        # print(limitations.__dir__)
+        return location
+
 
     def update(self, instance, validated_data):
         instance.lat = validated_data.get('lat', instance.lat)
@@ -67,21 +105,20 @@ class WorkloadSerializer(serializers.Serializer):
     def create(self, validated_data):
         # Data retrieval
         owner_id = int(validated_data.pop('user_id', None))
+        print(owner_id)
         lng = validated_data.pop('lng', None)
         lat = validated_data.pop('lat', None)
         street_address = validated_data.pop('street_address', None)
         description = validated_data.pop('description', None)
 
-
         # Object creation
         workload = Workload.objects.create()
 
-        location_serializer = LocationSerializer(data={'lat':lat, 'lng':lng, 'street_address':street_address})
+        location_serializer = LocationSerializer(data={'lat': lat, 'lng': lng, 'street_address': street_address, 'user_id':owner_id})
 
         if location_serializer.is_valid():
-            location_data = location_serializer.save()
+            location = location_serializer.save()
 
-        location = Location.objects.create(**location_data)
         wall_photo_wrapper = WallPhotoWrapper.objects.create(description=description, owner_id=owner_id,
                                                              location=location, workload=workload)
 
@@ -143,7 +180,7 @@ class ReadOnlyWorkloadSerializer(serializers.ModelSerializer):
 class WallPhotoWrapperLocationSerializer(serializers.Serializer):
     lng = serializers.FloatField()
     lat = serializers.FloatField()
-    street_address=serializers.CharField()
+    street_address = serializers.CharField()
     self = NestedHyperlinkedRelatedField(
         read_only=True,
         source='*',
@@ -168,7 +205,7 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
     # location
     lng = serializers.FloatField(required=True, write_only=True)
     lat = serializers.FloatField(required=True, write_only=True)
-    street_address=serializers.CharField(required=False, write_only=True)
+    street_address = serializers.CharField(required=False, write_only=True)
 
     location = WallPhotoWrapperLocationSerializer(read_only=True)
     workload = serializers.HyperlinkedRelatedField(view_name='workload-detail', read_only=True)
@@ -193,12 +230,15 @@ class WallPhotoWrapperSerializer(serializers.ModelSerializer):
         description = validated_data.pop('description')
         workload_id = validated_data.pop('workload_id')
 
-
         # Object creation
-        location = Location.objects.create(**validated_data)
 
-        # Files
+        location_serializer = LocationSerializer(**validated_data)
+        if location_serializer.is_valid():
+            location = location_serializer.save()
+
+
         wall_photos_data = self.context.get('view').request.FILES
+
         wall_photo_wrapper = WallPhotoWrapper.objects.create(description=description, owner_id=owner_id,
                                                              location=location, workload_id=workload_id)
 
@@ -349,3 +389,26 @@ class SketchImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LimitationSerializer(serializers.Serializer):
+    authority_id = serializers.IntegerField(required=True, write_only=True)
+    location_id = serializers.IntegerField(required=True, write_only=True)
+    reason = serializers.CharField(required=True, write_only=True)
+
+    class Meta:
+        model = Location
+        fields = '__all__'
+
+    def create(self, validated_data):
+        authority_id = int(validated_data.pop('authority_id', None))
+        location_id = int(validated_data.pop('location_id', None))
+        reason = validated_data.pop('reason', None)
+        print(1)
+        limitation = Limitation.objects.create(authority_id=authority_id, reason=reason, location_id=location_id)
+        #limitation = Limitation.objects.create(**validated_data)
+        limitation.save()
+        return limitation
+
+    def update(self, instance, validated_data):
+        instance.authority = validated_data.get('autority', instance.authority)
+        instance.reason = validated_data.get('reason', instance.reason)
+        return instance

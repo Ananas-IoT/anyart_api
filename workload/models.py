@@ -54,6 +54,14 @@ class Location(models.Model):
         return '%s, lng: %s, lat: %s' % (self.street_address or 'Unknown address', self.lng, self.lat)
 
 
+class Limitation(models.Model):
+    location = models.ForeignKey('workload.Location', on_delete=models.CASCADE, related_name='limitation',
+                                    blank=True, null=False)
+    authority = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='limitation_authority',
+                                  blank=True, null=False)
+    reason = models.TextField(max_length=500, blank=False, null=False)
+
+
 class WallPhotoWrapper(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='photo_wrappers',
                               blank=True, null=False)
