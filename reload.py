@@ -29,6 +29,7 @@ DB_PASSWORD = env(env_dict['DATABASE_PASSWORD'])
 
 
 # removing existing migration files
+# removing existing migration files
 remove_dirs = ['authorization/migrations', 'workload/migrations', 'approval/migrations']
 for remove_dir in remove_dirs:
     shutil.rmtree(remove_dir, ignore_errors=True)

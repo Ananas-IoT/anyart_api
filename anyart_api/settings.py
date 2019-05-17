@@ -12,6 +12,7 @@ environ.Env.read_env()
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = False
 DEV = False
 
@@ -25,6 +26,7 @@ env_dict = {
 if DEV:
     for key, value in env_dict.items():
         env_dict[key] = f'DEV_{value}'
+
 
 SECRET_KEY = env('SECRET_KEY')
 

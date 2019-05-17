@@ -1,4 +1,4 @@
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 import re
 import ast
 import base64 as b
@@ -7,7 +7,10 @@ import base64 as b
 def retrieve_payload(request):
     token_str = request.META['HTTP_AUTHORIZATION']
     regex = re.compile('\..*\.')
-    payload = regex.findall(token_str)[0]
+    try:
+        payload = regex.findall(token_str)[0]
+    except IndexError:
+        raise serializers.ValidationError('Cannot retrieve payload')
     payload = payload[1:-1]
 
     missing_data = len(payload) % 4
